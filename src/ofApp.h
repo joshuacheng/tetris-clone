@@ -1,8 +1,11 @@
 #pragma once
 
 #include "ofMain.h"
+#include "TetrisBoard.h"
 
-class ofApp : public ofBaseApp{
+class ofApp : public ofBaseApp {
+
+	TetrisBoard board;
 
 	public:
 		void setup();
