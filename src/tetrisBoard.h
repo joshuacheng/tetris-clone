@@ -5,12 +5,13 @@ const int TETRIS_HEIGHT = 20;
 
 class TetrisBoard {
 
-	bool board[TETRIS_WIDTH][TETRIS_HEIGHT];
+	bool board_[TETRIS_WIDTH][TETRIS_HEIGHT];
 
 public:
 
-	TetrisBoard() : board{ 0 } {};
+	TetrisBoard() : board_{ 0 } {};
 
+	bool spotIsFilled(int x, int y) const;
 	
 
 

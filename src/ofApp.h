@@ -8,7 +8,8 @@ const int BOX_SIZE = 50;
 
 class ofApp : public ofBaseApp {
 
-	TetrisBoard board_;
+	//TetrisBoard board_;
+	bool board_[10][20];
 
 	/* 
 	    pointRotations[piece_type][number of rotations][points in specific rotation]
@@ -16,6 +17,8 @@ class ofApp : public ofBaseApp {
 		around the piece, where the top left corner is (0,0).
 		See https://vignette.wikia.nocookie.net/tetrisconcept/images/3/3d/SRS-pieces.png/revision/latest?cb=20060626173148
 		for visualization.
+
+		Maybe refactor into separate classes later.
 
 	*/
 	Point pointRotations_[7][4][4] = {
@@ -76,6 +79,9 @@ class ofApp : public ofBaseApp {
 		}
 	};
 
+	Point piece_origin;
+	int piece_;
+
 	public:
 		void setup();
 		void update();
@@ -93,6 +99,7 @@ class ofApp : public ofBaseApp {
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		void drawPiece();
 		void drawBoard();
 		
 };
