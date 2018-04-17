@@ -86,3 +86,4 @@ void ofApp::drawBoard() {
 		}
 	}
 }
+

@@ -43,6 +43,9 @@
     <ClCompile Include="src\TetrisBoard.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Piece.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -174,6 +177,9 @@
       <Filter>addons\ofxGui\src</Filter>
     </ClInclude>
     <ClInclude Include="src\tetrisBoard.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Piece.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

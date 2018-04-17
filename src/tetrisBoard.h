@@ -7,7 +7,6 @@ class TetrisBoard {
 
 	bool board[TETRIS_WIDTH][TETRIS_HEIGHT];
 
-
 public:
 
 	TetrisBoard() : board{ 0 } {};
