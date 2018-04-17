@@ -3,9 +3,11 @@
 #include "ofMain.h"
 #include "TetrisBoard.h"
 
+const int BOX_SIZE = 50;
+
 class ofApp : public ofBaseApp {
 
-	TetrisBoard board;
+	TetrisBoard board_;
 
 	public:
 		void setup();
@@ -23,5 +25,7 @@ class ofApp : public ofBaseApp {
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
+		void drawBoard();
 		
 };
