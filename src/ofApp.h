@@ -1,14 +1,16 @@
 #pragma once
 
 #include "ofMain.h"
-#include "TetrisBoard.h"
+//#include "TetrisBoard.h"
 #include "Piece.h"
 
 const int BOX_SIZE = 50;
+const int TETRIS_WIDTH = 10;
+const int TETRIS_HEIGHT = 20;
 
 class ofApp : public ofBaseApp {
 
-	enum ROTATION {
+	enum DIRECTION {
 		LEFT,
 		RIGHT
 	};
@@ -84,7 +86,7 @@ class ofApp : public ofBaseApp {
 		}
 	};
 
-	Point piece_origin;
+	Point piece_origin_;
 	int piece_;
 	int piece_rotation_;
 
@@ -108,7 +110,8 @@ class ofApp : public ofBaseApp {
 		void drawPiece();
 		void drawBoard();
 
-		void rotatePiece(ROTATION rotation);
+		void rotatePiece(DIRECTION rotation);
 		void softDrop();
+		void move(DIRECTION direction);
 		
 };

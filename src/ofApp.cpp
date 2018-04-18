@@ -2,8 +2,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	piece_origin.x = 4;
-	piece_origin.y = 0;
+	piece_origin_.x = 4;
+	piece_origin_.y = 0;
 	piece_ = 4;
 	piece_rotation_ = 0;
 }
@@ -35,10 +35,10 @@ void ofApp::keyPressed(int key){
 		rotatePiece(LEFT);
 	}
 	else if (key_upper == OF_KEY_RIGHT) {
-
+		move(RIGHT);
 	}
 	else if (key_upper == OF_KEY_LEFT) {
-
+		move(LEFT);
 	}
 }
 
@@ -103,8 +103,8 @@ void ofApp::drawPiece() {
 	ofFill();
 
 	for (int i = 0; i < 4; i++) {
-		int boardX = piece_origin.x + pointRotations_[piece_][piece_rotation_][i].x;
-		int boardY = piece_origin.y + pointRotations_[piece_][piece_rotation_][i].y;
+		int boardX = piece_origin_.x + pointRotations_[piece_][piece_rotation_][i].x;
+		int boardY = piece_origin_.y + pointRotations_[piece_][piece_rotation_][i].y;
 		board_[boardX][boardY] = true;
 		ofDrawRectangle(100 + boardX * BOX_SIZE + 2, 100 + boardY * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 	}
@@ -131,7 +131,7 @@ void ofApp::drawBoard() {
 */
 
 // TODO: implement wall checking and kicks
-void ofApp::rotatePiece(ROTATION rotation) {
+void ofApp::rotatePiece(DIRECTION rotation) {
 	if (rotation == RIGHT) {
 		piece_rotation_ = (piece_rotation_ + 1) % 4;
 	}
@@ -143,10 +143,41 @@ void ofApp::rotatePiece(ROTATION rotation) {
 }
 
 /* 
-   A soft drop is when the player wants to move their piece down 
-   one tile at a time faster than the regular timer
+    A soft drop is when the player wants to move their piece down 
+    one tile at a time faster than the regular timer
 */
 void ofApp::softDrop() {
+
+}
+
+/*
+	move is the helper function for moving the piece left or right  
+
+*/
+void ofApp::move(DIRECTION direction) {	
+
+	if (direction == RIGHT) {
+		for (int piecePart = 0; piecePart < 4; piecePart++) {
+			int boardX = piece_origin_.x + pointRotations_[piece_][piece_rotation_][piecePart].x + 1;
+			
+			// If the piece moving right would go off screen, don't.
+			if (boardX >= TETRIS_WIDTH) {
+				return;
+			}
+		}
+		piece_origin_.x++;
+	}
+	else if (direction == LEFT) {
+		for (int piecePart = 0; piecePart < 4; piecePart++) {
+			int boardX = piece_origin_.x + pointRotations_[piece_][piece_rotation_][piecePart].x - 1;
+
+			// If the piece moving right would go off screen, don't.
+			if (boardX < 0) {
+				return;
+			}
+		}
+		piece_origin_.x--;
+	}
 
 }
 
