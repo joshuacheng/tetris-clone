@@ -4,7 +4,8 @@
 void ofApp::setup(){
 	piece_origin.x = 4;
 	piece_origin.y = 0;
-	piece_ = 2;
+	piece_ = 4;
+	piece_rotation_ = 0;
 }
 
 //--------------------------------------------------------------
@@ -22,8 +23,23 @@ void ofApp::draw(){
 }
 
 //--------------------------------------------------------------
+// TODO: don't let player hold down to keep rotating piece
+// reference solution: https://forum.openframeworks.cc/t/multiple-keys-and-key-related-questions/2034/2
 void ofApp::keyPressed(int key){
+	int key_upper = toupper(key);
 
+	if (key_upper == 'X' || key_upper == OF_KEY_UP) {
+		rotatePiece(RIGHT);
+	}
+	else if (key_upper == 'Z') {
+		rotatePiece(LEFT);
+	}
+	else if (key_upper == OF_KEY_RIGHT) {
+
+	}
+	else if (key_upper == OF_KEY_LEFT) {
+
+	}
 }
 
 //--------------------------------------------------------------
@@ -84,18 +100,14 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 void ofApp::drawPiece() {
 	
 	ofSetColor(ofColor::blue);
-	//ofSetLineWidth(1);
-
 	ofFill();
 
 	for (int i = 0; i < 4; i++) {
-		int boardX = piece_origin.x + pointRotations_[piece_][0][i].x;
-		int boardY = piece_origin.y + pointRotations_[piece_][0][i].y;
+		int boardX = piece_origin.x + pointRotations_[piece_][piece_rotation_][i].x;
+		int boardY = piece_origin.y + pointRotations_[piece_][piece_rotation_][i].y;
 		board_[boardX][boardY] = true;
 		ofDrawRectangle(100 + boardX * BOX_SIZE + 2, 100 + boardY * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 	}
-
-
 
 }
 
@@ -112,5 +124,29 @@ void ofApp::drawBoard() {
 			ofDrawRectangle(start_x + i * BOX_SIZE, start_y + j * BOX_SIZE, BOX_SIZE, BOX_SIZE);
 		}
 	}
+}
+
+/*
+	Rotates a piece based on the rotation enum.
+*/
+
+// TODO: implement wall checking and kicks
+void ofApp::rotatePiece(ROTATION rotation) {
+	if (rotation == RIGHT) {
+		piece_rotation_ = (piece_rotation_ + 1) % 4;
+	}
+	else {
+
+		// Extra modulo calculation required for potential negative number.
+		piece_rotation_ = ((piece_rotation_ - 1) % 4 + 4) % 4;
+	}
+}
+
+/* 
+   A soft drop is when the player wants to move their piece down 
+   one tile at a time faster than the regular timer
+*/
+void ofApp::softDrop() {
+
 }
 

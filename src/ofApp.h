@@ -8,6 +8,11 @@ const int BOX_SIZE = 50;
 
 class ofApp : public ofBaseApp {
 
+	enum ROTATION {
+		LEFT,
+		RIGHT
+	};
+
 	//TetrisBoard board_;
 	bool board_[10][20];
 
@@ -81,6 +86,7 @@ class ofApp : public ofBaseApp {
 
 	Point piece_origin;
 	int piece_;
+	int piece_rotation_;
 
 	public:
 		void setup();
@@ -101,5 +107,8 @@ class ofApp : public ofBaseApp {
 
 		void drawPiece();
 		void drawBoard();
+
+		void rotatePiece(ROTATION rotation);
+		void softDrop();
 		
 };
