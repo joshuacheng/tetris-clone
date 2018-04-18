@@ -40,6 +40,9 @@ void ofApp::keyPressed(int key){
 	else if (key_upper == OF_KEY_LEFT) {
 		move(LEFT);
 	}
+	else if (key_upper == OF_KEY_DOWN) {
+		softDrop();
+	}
 }
 
 //--------------------------------------------------------------
@@ -105,10 +108,10 @@ void ofApp::drawPiece() {
 	for (int i = 0; i < 4; i++) {
 		int boardX = piece_origin_.x + pointRotations_[piece_][piece_rotation_][i].x;
 		int boardY = piece_origin_.y + pointRotations_[piece_][piece_rotation_][i].y;
-		board_[boardX][boardY] = true;
+		//board_[boardX][boardY] = true;
 		ofDrawRectangle(100 + boardX * BOX_SIZE + 2, 100 + boardY * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 	}
-
+	
 }
 
 void ofApp::drawBoard() {
@@ -136,7 +139,6 @@ void ofApp::rotatePiece(DIRECTION rotation) {
 		piece_rotation_ = (piece_rotation_ + 1) % 4;
 	}
 	else {
-
 		// Extra modulo calculation required for potential negative number.
 		piece_rotation_ = ((piece_rotation_ - 1) % 4 + 4) % 4;
 	}
@@ -147,12 +149,20 @@ void ofApp::rotatePiece(DIRECTION rotation) {
     one tile at a time faster than the regular timer
 */
 void ofApp::softDrop() {
+	for (int piecePart = 0; piecePart < 4; piecePart++) {
+		int boardY = piece_origin_.y + pointRotations_[piece_][piece_rotation_][piecePart].y + 1;
 
+		// If the piece moving right would go off screen, don't.
+		if (boardY >= TETRIS_HEIGHT) {
+			return;
+		}
+	}
+
+	piece_origin_.y++;
 }
 
 /*
-	move is the helper function for moving the piece left or right  
-
+	move is the helper function for moving the piece left or right. 
 */
 void ofApp::move(DIRECTION direction) {	
 
