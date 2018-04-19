@@ -4,18 +4,31 @@
 void ofApp::setup(){
 	piece_origin_.x = 4;
 	piece_origin_.y = 0;
-	piece_ = 4;
+	lowest_point_.x = 0;
+	lowest_point_.y = 0;
+	piece_type_ = S;
 	piece_rotation_ = 0;
 }
 
 //--------------------------------------------------------------
-void ofApp::update(){
+void ofApp::update() {
+	
+	// Constantly update the piece's lowest point.
+	for (int piecePart = 0; piecePart < 4; piecePart++) {
+		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
+		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
+		if (lowest_point_.y < boardY) {
+			lowest_point_.x = boardX;
+			lowest_point_.y = boardY;
+		}
+	}
 
+
+	
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
 
 	drawBoard();
 	drawPiece();
@@ -25,6 +38,8 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 // TODO: don't let player hold down to keep rotating piece
 // reference solution: https://forum.openframeworks.cc/t/multiple-keys-and-key-related-questions/2034/2
+// TODO: implement ghost
+
 void ofApp::keyPressed(int key){
 	int key_upper = toupper(key);
 
@@ -35,13 +50,16 @@ void ofApp::keyPressed(int key){
 		rotatePiece(LEFT);
 	}
 	else if (key_upper == OF_KEY_RIGHT) {
-		move(RIGHT);
+		horizontalMove(RIGHT);
 	}
 	else if (key_upper == OF_KEY_LEFT) {
-		move(LEFT);
+		horizontalMove(LEFT);
 	}
 	else if (key_upper == OF_KEY_DOWN) {
 		softDrop();
+	}
+	else if (key_upper == ' ') { // ' ' is space bar
+		hardDrop();
 	}
 }
 
@@ -106,12 +124,11 @@ void ofApp::drawPiece() {
 	ofFill();
 
 	for (int i = 0; i < 4; i++) {
-		int boardX = piece_origin_.x + pointRotations_[piece_][piece_rotation_][i].x;
-		int boardY = piece_origin_.y + pointRotations_[piece_][piece_rotation_][i].y;
+		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][i].x;
+		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][i].y;
 		//board_[boardX][boardY] = true;
 		ofDrawRectangle(100 + boardX * BOX_SIZE + 2, 100 + boardY * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 	}
-	
 }
 
 void ofApp::drawBoard() {
@@ -133,42 +150,26 @@ void ofApp::drawBoard() {
 	Rotates a piece based on the rotation enum.
 */
 
-// TODO: implement wall checking and kicks
-void ofApp::rotatePiece(DIRECTION rotation) {
+void ofApp::rotatePiece(Direction rotation) {
 	int new_rotation;
 
 	if (rotation == RIGHT) {
 		new_rotation = (piece_rotation_ + 1) % 4;
-
-		// Check if this new rotation will cause wall collision.
-		// TOOD: implement kick instead of do nothing
-		for (int piecePart = 0; piecePart < 4; piecePart++) {
-			int boardX = piece_origin_.x + pointRotations_[piece_][new_rotation][piecePart].x;
-			int boardY = piece_origin_.y + pointRotations_[piece_][new_rotation][piecePart].y;
-
-			// If the piece moving right would go off screen, don't.
-			if (boardX >= TETRIS_WIDTH || boardX < 0 || boardY >= TETRIS_HEIGHT) {
-				return;
-			}
-		}
-		piece_rotation_ = new_rotation;
-
 	}
-	else {
+	else if (rotation == LEFT) {
 		new_rotation = ((piece_rotation_ - 1) % 4 + 4) % 4;
-
-		for (int piecePart = 0; piecePart < 4; piecePart++) {
-			int boardX = piece_origin_.x + pointRotations_[piece_][new_rotation][piecePart].x;
-			int boardY = piece_origin_.y + pointRotations_[piece_][new_rotation][piecePart].y;
-
-			// If the piece moving right would go off screen, don't.
-			if (boardX >= TETRIS_WIDTH || boardX < 0 || boardY >= TETRIS_HEIGHT) {
-				return;
-			}
-		}
-		// Extra modulo calculation required for potential negative number.
-		piece_rotation_ = new_rotation;
 	}
+	// TODO: implement kick instead of do nothing
+	for (int piecePart = 0; piecePart < 4; piecePart++) {
+		int boardX = piece_origin_.x + pointRotations_[piece_type_][new_rotation][piecePart].x;
+		int boardY = piece_origin_.y + pointRotations_[piece_type_][new_rotation][piecePart].y;
+
+		// If the piece moving right would go off screen, don't.
+		if (boardX >= TETRIS_WIDTH || boardX < 0 || boardY >= TETRIS_HEIGHT) {
+			return;
+		}
+	}
+	piece_rotation_ = new_rotation;
 }
 
 /* 
@@ -177,7 +178,7 @@ void ofApp::rotatePiece(DIRECTION rotation) {
 */
 void ofApp::softDrop() {
 	for (int piecePart = 0; piecePart < 4; piecePart++) {
-		int boardY = piece_origin_.y + pointRotations_[piece_][piece_rotation_][piecePart].y + 1;
+		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y + 1;
 
 		// If the piece moving right would go off screen, don't.
 		if (boardY >= TETRIS_HEIGHT) {
@@ -189,13 +190,28 @@ void ofApp::softDrop() {
 }
 
 /*
-	move is the helper function for moving the piece left or right. 
+	A hard drop is when player wants to drop to lowest possible point
+	in current column.
 */
-void ofApp::move(DIRECTION direction) {	
+void ofApp::hardDrop() {
+	int spacesDropped = 0;
+
+	// Peeks ahead and sees how far it can drop the piece.
+	for (int y_drop = lowest_point_.y; y_drop + 1 < TETRIS_HEIGHT && !board_[lowest_point_.x][y_drop + 1]; y_drop++) {
+		spacesDropped++;
+	}
+
+	piece_origin_.y += spacesDropped;
+}
+
+/*
+	Helper function for moving the piece left or right. 
+*/
+void ofApp::horizontalMove(Direction direction) {	
 
 	if (direction == RIGHT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
-			int boardX = piece_origin_.x + pointRotations_[piece_][piece_rotation_][piecePart].x + 1;
+			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x + 1;
 			
 			// If the piece moving right would go off screen, don't.
 			if (boardX >= TETRIS_WIDTH) {
@@ -206,7 +222,7 @@ void ofApp::move(DIRECTION direction) {
 	}
 	else if (direction == LEFT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
-			int boardX = piece_origin_.x + pointRotations_[piece_][piece_rotation_][piecePart].x - 1;
+			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x - 1;
 
 			// If the piece moving right would go off screen, don't.
 			if (boardX < 0) {

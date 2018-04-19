@@ -4,19 +4,28 @@
 //#include "TetrisBoard.h"
 #include "Piece.h"
 
+
 const int BOX_SIZE = 50;
 const int TETRIS_WIDTH = 10;
 const int TETRIS_HEIGHT = 20;
 
 class ofApp : public ofBaseApp {
 
-	enum DIRECTION {
+	enum Direction {
 		LEFT,
 		RIGHT
 	};
 
+	/* 
+	    The order of these piece types matches the order
+	    they appear in the array.
+	*/
+	enum PieceType {
+		I, J, L, O, S, T, Z
+	};
+
 	//TetrisBoard board_;
-	bool board_[10][20];
+	bool board_[TETRIS_WIDTH][TETRIS_HEIGHT];
 
 	/* 
 	    pointRotations[piece_type][number of rotations][points in specific rotation]
@@ -87,7 +96,8 @@ class ofApp : public ofBaseApp {
 	};
 
 	Point piece_origin_;
-	int piece_;
+	Point lowest_point_;
+	int piece_type_;
 	int piece_rotation_;
 
 	public:
@@ -110,8 +120,9 @@ class ofApp : public ofBaseApp {
 		void drawPiece();
 		void drawBoard();
 
-		void rotatePiece(DIRECTION rotation);
+		void rotatePiece(Direction rotation);
 		void softDrop();
-		void move(DIRECTION direction);
+		void hardDrop();
+		void horizontalMove(Direction direction);
 		
 };
