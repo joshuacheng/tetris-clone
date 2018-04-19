@@ -135,12 +135,39 @@ void ofApp::drawBoard() {
 
 // TODO: implement wall checking and kicks
 void ofApp::rotatePiece(DIRECTION rotation) {
+	int new_rotation;
+
 	if (rotation == RIGHT) {
-		piece_rotation_ = (piece_rotation_ + 1) % 4;
+		new_rotation = (piece_rotation_ + 1) % 4;
+
+		// Check if this new rotation will cause wall collision.
+		// TOOD: implement kick instead of do nothing
+		for (int piecePart = 0; piecePart < 4; piecePart++) {
+			int boardX = piece_origin_.x + pointRotations_[piece_][new_rotation][piecePart].x;
+			int boardY = piece_origin_.y + pointRotations_[piece_][new_rotation][piecePart].y;
+
+			// If the piece moving right would go off screen, don't.
+			if (boardX >= TETRIS_WIDTH || boardX < 0 || boardY >= TETRIS_HEIGHT) {
+				return;
+			}
+		}
+		piece_rotation_ = new_rotation;
+
 	}
 	else {
+		new_rotation = ((piece_rotation_ - 1) % 4 + 4) % 4;
+
+		for (int piecePart = 0; piecePart < 4; piecePart++) {
+			int boardX = piece_origin_.x + pointRotations_[piece_][new_rotation][piecePart].x;
+			int boardY = piece_origin_.y + pointRotations_[piece_][new_rotation][piecePart].y;
+
+			// If the piece moving right would go off screen, don't.
+			if (boardX >= TETRIS_WIDTH || boardX < 0 || boardY >= TETRIS_HEIGHT) {
+				return;
+			}
+		}
 		// Extra modulo calculation required for potential negative number.
-		piece_rotation_ = ((piece_rotation_ - 1) % 4 + 4) % 4;
+		piece_rotation_ = new_rotation;
 	}
 }
 

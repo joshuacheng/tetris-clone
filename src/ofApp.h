@@ -29,7 +29,7 @@ class ofApp : public ofBaseApp {
 
 	*/
 	Point pointRotations_[7][4][4] = {
-		// I-Piece
+		// I
 		{
 			{Point(0, 1),Point(1, 1),Point(2, 1),Point(3, 1) },
 			{Point(1, 0),Point(1, 1),Point(1, 2),Point(1, 3) },
@@ -37,7 +37,7 @@ class ofApp : public ofBaseApp {
 			{Point(2, 0),Point(2, 1),Point(2, 2),Point(2, 3) }
 		},
 
-		// J-Piece
+		// J
 		{
 			{Point(0, 0),Point(1, 0),Point(1, 1),Point(2, 1) },
 			{Point(1, 0),Point(2, 0),Point(1, 1),Point(1, 2) },
@@ -45,7 +45,7 @@ class ofApp : public ofBaseApp {
 			{Point(0, 1),Point(1, 1),Point(1, 2),Point(0, 2) }
 		},
 
-		// L-Piece
+		// L
 		{
 			{Point(0, 1),Point(1, 1),Point(2, 1),Point(2, 0) },
 			{Point(1, 0),Point(1, 1),Point(1, 2),Point(2, 2) },
@@ -53,7 +53,7 @@ class ofApp : public ofBaseApp {
 			{Point(1, 0),Point(1, 1),Point(1, 2),Point(0, 0) }
 		},
 
-		// O-Piece
+		// O
 		{
 			{Point(0, 0),Point(0, 1),Point(1, 0),Point(1, 1) },
 			{Point(0, 0),Point(0, 1),Point(1, 0),Point(1, 1) },
@@ -61,7 +61,7 @@ class ofApp : public ofBaseApp {
 			{Point(0, 0),Point(0, 1),Point(1, 0),Point(1, 1) }
 		},
 
-		// S-Piece
+		// S
 		{
 			{Point(1, 0),Point(2, 0),Point(0, 1),Point(1, 1) },
 			{Point(1, 0),Point(1, 1),Point(2, 1),Point(2, 2) },
@@ -69,7 +69,7 @@ class ofApp : public ofBaseApp {
 			{Point(0, 0),Point(0, 1),Point(1, 1),Point(1, 2) }
 		},
 
-		// T-Piece
+		// T
 		{
 			{Point(1, 0),Point(0, 1),Point(1, 1),Point(2, 1) },
 			{Point(1, 0),Point(1, 1),Point(1, 2),Point(2, 1) },
@@ -77,7 +77,7 @@ class ofApp : public ofBaseApp {
 			{Point(1, 0),Point(1, 1),Point(0, 1),Point(1, 2) }
 		},
 
-		// Z-Piece
+		// Z
 		{
 			{Point(0, 0),Point(1, 0),Point(1, 1),Point(2, 1) },
 			{Point(2, 0),Point(2, 1),Point(1, 1),Point(1, 2) },
