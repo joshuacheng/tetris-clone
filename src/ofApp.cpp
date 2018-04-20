@@ -40,11 +40,10 @@ void ofApp::update() {
 			board_[boardX][boardY] = true;
 		}
 
-		// TODO: Make new piece
 		makeNewPiece();
 	}
 
-	std::cout << lowest_point_.y << "/" << piece_type_ << std::endl;
+	//std::cout << lowest_point_.y << "/" << piece_type_ << std::endl;
 
 }
 
@@ -53,7 +52,6 @@ void ofApp::draw(){
 
 	drawBoard();
 	drawPiece();
-	
 }
 
 //--------------------------------------------------------------
@@ -228,7 +226,7 @@ void ofApp::softDrop() {
 		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
 		int y_spot_below = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y + 1;
 
-		// If the piece moving right would go off screen or hit another block, don't.
+		// If the piece moving down would go off screen or hit another block, don't.
 		if (y_spot_below >= TETRIS_HEIGHT || board_[boardX][y_spot_below]) {
 			return;
 		}
@@ -266,15 +264,17 @@ void ofApp::hardDrop() {
 
 /*
 	Helper function for moving the piece left or right. 
+	UNDONE: Fix for legal left and right movements into other pieces.
 */
 void ofApp::horizontalMove(Direction direction) {	
 
 	if (direction == RIGHT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
-			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x + 1;
-			
-			// If the piece moving right would go off screen, don't.
-			if (boardX >= TETRIS_WIDTH) {
+			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
+			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
+
+			// If the piece moving right would go off screen or hit a piece, don't.
+			if (boardX + 1 >= TETRIS_WIDTH || board_[boardX + 1][boardY]) {
 				return;
 			}
 		}
@@ -282,10 +282,10 @@ void ofApp::horizontalMove(Direction direction) {
 	}
 	else if (direction == LEFT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
-			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x - 1;
+			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
+			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
 
-			// If the piece moving right would go off screen, don't.
-			if (boardX < 0) {
+			if (boardX - 1 < 0 || board_[boardX - 1][boardY]) {
 				return;
 			}
 		}
