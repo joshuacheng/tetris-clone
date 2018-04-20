@@ -8,6 +8,9 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	// Reset lowest point.
+	lowest_point_.x = 0;
+	lowest_point_.y = 0;
 	
 	// Constantly update the piece's lowest point.
 	for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -20,8 +23,9 @@ void ofApp::update() {
 	}
 
 
-	// Check if piece hit floor
-	if (lowest_point_.y == TETRIS_HEIGHT - 1) {
+	// Check if piece hit floor or another piece
+	if (lowest_point_.y == TETRIS_HEIGHT - 1 || 
+		(board_[lowest_point_.x][lowest_point_.y + 1])) {
 
 		// Set the board tiles on piece to true for drawing purposes.
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -34,8 +38,8 @@ void ofApp::update() {
 		makeNewPiece();
 	}
 
+	std::cout << lowest_point_.y << "/" << piece_type_ << std::endl;
 
-	
 }
 
 //--------------------------------------------------------------
@@ -72,7 +76,6 @@ void ofApp::keyPressed(int key){
 	else if (key_upper == ' ') { // ' ' is space bar
 		hardDrop();
 	}
-	//std::cout << lowest_point_.y << "/" << piece_type_ << std::endl;
 
 }
 
@@ -162,12 +165,12 @@ void ofApp::drawBoard() {
 			if (board_[i][j]) {
 				ofSetColor(ofColor::blue);
 				ofFill();
-				ofDrawRectangle(start_x + i * BOX_SIZE, start_y + j * BOX_SIZE, BOX_SIZE, BOX_SIZE);
+				ofDrawRectangle(start_x + i * BOX_SIZE + 2, start_y + j * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 				ofSetColor(ofColor::black);
 				ofNoFill();
 			}
 			else {
-				ofDrawRectangle(start_x + i * BOX_SIZE, start_y + j * BOX_SIZE, BOX_SIZE, BOX_SIZE);
+				ofDrawRectangle(start_x + i * BOX_SIZE + 2, start_y + j * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 			}
 		}
 	}
