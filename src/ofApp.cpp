@@ -11,6 +11,8 @@ void ofApp::update() {
 	// Reset lowest point.
 	lowest_point_.x = 0;
 	lowest_point_.y = 0;
+
+
 	
 	// Constantly update the piece's lowest point.
 	for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -185,8 +187,6 @@ void ofApp::makeNewPiece() {
 	int random_piece = rand() % 6;
 	piece_type_ = random_piece;
 	piece_rotation_ = 0;
-
-
 }
 
 /*
@@ -221,10 +221,11 @@ void ofApp::rotatePiece(Direction rotation) {
 */
 void ofApp::softDrop() {
 	for (int piecePart = 0; piecePart < 4; piecePart++) {
-		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y + 1;
+		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
+		int y_spot_below = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y + 1;
 
-		// If the piece moving right would go off screen, don't.
-		if (boardY >= TETRIS_HEIGHT) {
+		// If the piece moving right would go off screen or hit another block, don't.
+		if (y_spot_below >= TETRIS_HEIGHT || board_[boardX][y_spot_below]) {
 			return;
 		}
 	}
@@ -238,12 +239,24 @@ void ofApp::softDrop() {
 */
 void ofApp::hardDrop() {
 	int spacesDropped = 0;
+	int canDrop = true;
 
-	// Peeks ahead and sees how far it can drop the piece.
-	for (int y_drop = lowest_point_.y; y_drop + 1 < TETRIS_HEIGHT && !board_[lowest_point_.x][y_drop + 1]; y_drop++) {
+	int peeksAhead = 0;
+
+	while (canDrop) {
+		for (int piecePart = 0; piecePart < 4; piecePart++) {
+			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
+			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y + peeksAhead;
+			
+			if (boardY == TETRIS_HEIGHT - 1 || board_[boardX][boardY + 1]) {
+				piece_origin_.y += spacesDropped;
+				return;
+			}
+		}
+		peeksAhead++;
 		spacesDropped++;
 	}
-
+	
 	piece_origin_.y += spacesDropped;
 }
 
