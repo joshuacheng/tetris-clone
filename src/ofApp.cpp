@@ -12,7 +12,7 @@ void ofApp::update() {
 	lowest_point_.x = 0;
 	lowest_point_.y = 0;
 
-
+	bool canDrop = true;
 	
 	// Constantly update the piece's lowest point.
 	for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -22,12 +22,16 @@ void ofApp::update() {
 			lowest_point_.x = boardX;
 			lowest_point_.y = boardY;
 		}
+
+		// If any part of the current piece is obstructed one spot below:
+		if (board_[boardX][boardY + 1]) {
+			canDrop = false;
+		}
 	}
 
 
 	// Check if piece hit floor or another piece
-	if (lowest_point_.y == TETRIS_HEIGHT - 1 || 
-		(board_[lowest_point_.x][lowest_point_.y + 1])) {
+	if (lowest_point_.y == TETRIS_HEIGHT - 1 || !canDrop) {
 
 		// Set the board tiles on piece to true for drawing purposes.
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
