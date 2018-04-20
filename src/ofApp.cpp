@@ -1,13 +1,9 @@
 #include "ofApp.h"
+#include <iostream>
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	piece_origin_.x = 4;
-	piece_origin_.y = 0;
-	lowest_point_.x = 0;
-	lowest_point_.y = 0;
-	piece_type_ = S;
-	piece_rotation_ = 0;
+	makeNewPiece();
 }
 
 //--------------------------------------------------------------
@@ -15,12 +11,27 @@ void ofApp::update() {
 	
 	// Constantly update the piece's lowest point.
 	for (int piecePart = 0; piecePart < 4; piecePart++) {
-		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
 		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
+		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
 		if (lowest_point_.y < boardY) {
 			lowest_point_.x = boardX;
 			lowest_point_.y = boardY;
 		}
+	}
+
+
+	// Check if piece hit floor
+	if (lowest_point_.y == TETRIS_HEIGHT - 1) {
+
+		// Set the board tiles on piece to true for drawing purposes.
+		for (int piecePart = 0; piecePart < 4; piecePart++) {
+			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
+			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
+			board_[boardX][boardY] = true;
+		}
+
+		// TODO: Make new piece
+		makeNewPiece();
 	}
 
 
@@ -61,6 +72,8 @@ void ofApp::keyPressed(int key){
 	else if (key_upper == ' ') { // ' ' is space bar
 		hardDrop();
 	}
+	//std::cout << lowest_point_.y << "/" << piece_type_ << std::endl;
+
 }
 
 //--------------------------------------------------------------
@@ -131,6 +144,8 @@ void ofApp::drawPiece() {
 	}
 }
 
+
+
 void ofApp::drawBoard() {
 	ofSetLineWidth(1);
 	ofSetColor(ofColor::black);
@@ -141,9 +156,34 @@ void ofApp::drawBoard() {
 
 	for (int i = 0; i < TETRIS_WIDTH; ++i) {
 		for (int j = 0; j < TETRIS_HEIGHT; ++j) {
-			ofDrawRectangle(start_x + i * BOX_SIZE, start_y + j * BOX_SIZE, BOX_SIZE, BOX_SIZE);
+
+			// Draw pieces already filled in blue for now.
+			// TODO: save colors somehow maybe color array
+			if (board_[i][j]) {
+				ofSetColor(ofColor::blue);
+				ofFill();
+				ofDrawRectangle(start_x + i * BOX_SIZE, start_y + j * BOX_SIZE, BOX_SIZE, BOX_SIZE);
+				ofSetColor(ofColor::black);
+				ofNoFill();
+			}
+			else {
+				ofDrawRectangle(start_x + i * BOX_SIZE, start_y + j * BOX_SIZE, BOX_SIZE, BOX_SIZE);
+			}
 		}
 	}
+}
+
+void ofApp::makeNewPiece() {
+	piece_origin_.x = 4;
+	piece_origin_.y = 0;
+	lowest_point_.x = 0;
+	lowest_point_.y = 0;
+
+	int random_piece = rand() % 6;
+	piece_type_ = random_piece;
+	piece_rotation_ = 0;
+
+
 }
 
 /*
@@ -164,7 +204,7 @@ void ofApp::rotatePiece(Direction rotation) {
 		int boardX = piece_origin_.x + pointRotations_[piece_type_][new_rotation][piecePart].x;
 		int boardY = piece_origin_.y + pointRotations_[piece_type_][new_rotation][piecePart].y;
 
-		// If the piece moving right would go off screen, don't.
+		// If the piece would go off screen, don't.
 		if (boardX >= TETRIS_WIDTH || boardX < 0 || boardY >= TETRIS_HEIGHT) {
 			return;
 		}

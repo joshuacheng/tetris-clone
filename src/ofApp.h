@@ -34,8 +34,9 @@ class ofApp : public ofBaseApp {
 		See https://vignette.wikia.nocookie.net/tetrisconcept/images/3/3d/SRS-pieces.png/revision/latest?cb=20060626173148
 		for visualization.
 
-		Maybe refactor into separate classes later.
-
+		TODO: Maybe refactor into separate classes later 
+		      which use std::array to get list of points
+		
 	*/
 	Point pointRotations_[7][4][4] = {
 		// I
@@ -48,10 +49,10 @@ class ofApp : public ofBaseApp {
 
 		// J
 		{
-			{Point(0, 0),Point(1, 0),Point(1, 1),Point(2, 1) },
+			{Point(0, 0),Point(0, 1),Point(1, 1),Point(2, 1) },
 			{Point(1, 0),Point(2, 0),Point(1, 1),Point(1, 2) },
-			{Point(0, 1),Point(1, 1),Point(1, 2),Point(2, 2) },
-			{Point(0, 1),Point(1, 1),Point(1, 2),Point(0, 2) }
+			{Point(0, 1),Point(1, 1),Point(2, 1),Point(2, 2) },
+			{Point(1, 0),Point(1, 1),Point(1, 2),Point(0, 2) }
 		},
 
 		// L
@@ -120,6 +121,7 @@ class ofApp : public ofBaseApp {
 		void drawPiece();
 		void drawBoard();
 
+		void makeNewPiece();
 		void rotatePiece(Direction rotation);
 		void softDrop();
 		void hardDrop();
