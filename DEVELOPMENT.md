@@ -8,3 +8,5 @@ Week 1:
           such a small amount of pieces. As of right now, all of my work is being done on finishing 
           the base Tetris game before I add GUI elements or game sound. I will need to make sure to finish
           the game ASAP because GUI and/or game sound will be the libraries fulfilling my library requirement.
+  - 4/19: Pieces can fall into the right places for the most part, but there are a few cases where I need to check
+	      all the parts of a piece and whether they can fall, not just the lowest point.
