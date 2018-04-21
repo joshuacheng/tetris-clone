@@ -10,7 +10,28 @@ const int TETRIS_WIDTH = 10;
 const int TETRIS_HEIGHT = 20;
 
 class ofApp : public ofBaseApp {
+	
+	// Scheduler used for making piece fall every second.
+	class Scheduler : public ofThread {
+	public:
+		Scheduler(Point *piece) {
+			piece_origin_ = piece;
 
+			// setPeriodicEvent works in nanoseconds.
+			timer.setPeriodicEvent(1000000000);
+			startThread();
+		}
+	private:
+		ofTimer timer;
+		Point *piece_origin_;
+		void threadedFunction() {
+			while (isThreadRunning()) {
+				timer.waitNext();
+				piece_origin_->y++;
+			}
+		}
+	};
+	
 	enum Direction {
 		LEFT,
 		RIGHT
@@ -101,7 +122,10 @@ class ofApp : public ofBaseApp {
 	int piece_type_;
 	int piece_rotation_;
 
+	Scheduler *timer;
+
 	public:
+		
 		void setup();
 		void update();
 		void draw();
@@ -127,4 +151,5 @@ class ofApp : public ofBaseApp {
 		void hardDrop();
 		void horizontalMove(Direction direction);
 		
+		void incrementY();
 };

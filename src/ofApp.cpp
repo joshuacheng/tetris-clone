@@ -4,6 +4,8 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	makeNewPiece();
+
+	timer = new Scheduler(&piece_origin_);
 }
 
 //--------------------------------------------------------------
@@ -292,5 +294,11 @@ void ofApp::horizontalMove(Direction direction) {
 		piece_origin_.x--;
 	}
 
+	
+
+}
+
+void ofApp::incrementY() {
+	piece_origin_.y++;
 }
 
