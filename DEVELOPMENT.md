@@ -15,4 +15,7 @@ Week 1:
 Week 2:
 - 4/20: Busy this weekend but I should be finishing the game within the next few days so I can get 
         started on GUI and sound libraries.
+- 4/21: Today I worked on row clearing, which took a surprisingly long time to figure out
+        both because of my coding decisions and needing to keep track of what updates what in my
+		system. Imagine how much trouble multithreading is.
         
