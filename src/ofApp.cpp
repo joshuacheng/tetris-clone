@@ -14,34 +14,13 @@ void ofApp::update() {
 	lowest_point_.x = 0;
 	lowest_point_.y = 0;
 
-	bool canDrop = true;
-	
-	// Constantly update the piece's lowest point.
-	for (int piecePart = 0; piecePart < 4; piecePart++) {
-		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
-		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
-		if (lowest_point_.y < boardY) {
-			lowest_point_.x = boardX;
-			lowest_point_.y = boardY;
-		}
-
-		// If any part of the current piece is obstructed one spot below:
-		if (board_[boardX][boardY + 1]) {
-			canDrop = false;
-		}
-	}
-
+	bool canDrop = updateLowestPoint();
 
 	// Check if piece hit floor or another piece
 	if (lowest_point_.y == TETRIS_HEIGHT - 1 || !canDrop) {
 
 		// Set the board tiles on piece to true for drawing purposes.
-		for (int piecePart = 0; piecePart < 4; piecePart++) {
-			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
-			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
-			board_[boardX][boardY] = true;
-		}
-
+		setPiecesToBoard();
 		makeNewPiece();
 	}
 
@@ -235,6 +214,8 @@ void ofApp::softDrop() {
 	}
 
 	piece_origin_.y++;
+	updateLowestPoint();
+	clearRows();
 }
 
 /*
@@ -252,8 +233,12 @@ void ofApp::hardDrop() {
 			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
 			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y + peeksAhead;
 			
-			if (boardY == TETRIS_HEIGHT - 1 || board_[boardX][boardY + 1]) {
+			if (boardY >= TETRIS_HEIGHT - 1 || board_[boardX][boardY + 1]) {
 				piece_origin_.y += spacesDropped;
+				setPiecesToBoard();
+				updateLowestPoint();
+				clearRows();
+				makeNewPiece();
 				return;
 			}
 		}
@@ -261,7 +246,6 @@ void ofApp::hardDrop() {
 		spacesDropped++;
 	}
 	
-	piece_origin_.y += spacesDropped;
 }
 
 /*
@@ -294,11 +278,78 @@ void ofApp::horizontalMove(Direction direction) {
 		piece_origin_.x--;
 	}
 
-	
-
 }
 
-void ofApp::incrementY() {
-	piece_origin_.y++;
+/*
+	This method is called whenever a piece falls into place, NOT on every update.
+	pretty self-explanatory, clears the rows possible and drops above pieces down
+*/
+
+// TODO: CHECK HOW TO UPDATE CORRECTLY
+void ofApp::clearRows() {
+	std::cout << "called once" << std::endl;
+
+	// Clear up to 4 rows.
+	for (int rowToCheck = lowest_point_.y, i = 0; i < 4; rowToCheck--, i++) {
+		bool skipRow = false;
+
+		// Make sure the whole row is there.
+		for (int col = 0; col < TETRIS_WIDTH; col++) {
+			std::cout << rowToCheck;
+			std::cout << board_[col][rowToCheck] << std::endl;
+
+			if (!board_[col][rowToCheck]) {
+				skipRow = true;
+				break;
+			}
+		}
+
+		if (skipRow) {
+			continue;
+		}
+
+		// If entire row was there, clear it.
+		for (int col = 0; col < TETRIS_WIDTH; col++) {
+			std::cout << "clearing row" << col ;
+			board_[col][rowToCheck] = false;
+		}
+	}
+
+	// Push above rows down to appropriate spot.
+	// TODO: IMPLEMENT
 }
 
+/*
+	This method returns whether the piece can drop to the next column after update.
+*/
+bool ofApp::updateLowestPoint() {
+	bool canDrop = true;
+
+	// Constantly update the piece's lowest point.
+	for (int piecePart = 0; piecePart < 4; piecePart++) {
+		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
+		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
+		if (lowest_point_.y < boardY) {
+			lowest_point_.x = boardX;
+			lowest_point_.y = boardY;
+		}
+
+		// If any part of the current piece is obstructed one spot below:
+		if (board_[boardX][boardY + 1]) {
+			canDrop = false;
+		}
+	}
+
+	return canDrop;
+}
+
+/*
+	Makes current piece become a part of the board.
+*/
+void ofApp::setPiecesToBoard() {
+	for (int piecePart = 0; piecePart < 4; piecePart++) {
+		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
+		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
+		board_[boardX][boardY] = true;
+	}
+}

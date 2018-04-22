@@ -11,14 +11,14 @@ const int TETRIS_HEIGHT = 20;
 
 class ofApp : public ofBaseApp {
 	
-	// Scheduler used for making piece fall every second.
+	// Scheduler used for making piece automatically fall.
 	class Scheduler : public ofThread {
 	public:
 		Scheduler(Point *piece) {
 			piece_origin_ = piece;
 
-			// setPeriodicEvent works in nanoseconds.
-			timer.setPeriodicEvent(1000000000);
+			// fall every 0.7 seconds
+			timer.setPeriodicEvent(700000000);
 			startThread();
 		}
 	private:
@@ -118,6 +118,11 @@ class ofApp : public ofBaseApp {
 	};
 
 	Point piece_origin_;
+
+	/*
+		Lowest point of the current block with respect
+		to the board's coordinates, not piece_origin_
+	*/
 	Point lowest_point_;
 	int piece_type_;
 	int piece_rotation_;
@@ -142,14 +147,17 @@ class ofApp : public ofBaseApp {
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		// ---- Draw ----
 		void drawPiece();
 		void drawBoard();
 
+		// ---- Piece manipulation ----
 		void makeNewPiece();
 		void rotatePiece(Direction rotation);
 		void softDrop();
 		void hardDrop();
 		void horizontalMove(Direction direction);
-		
-		void incrementY();
+		void clearRows();
+		bool updateLowestPoint();
+		void setPiecesToBoard();
 };
