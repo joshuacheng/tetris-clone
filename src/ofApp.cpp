@@ -16,6 +16,7 @@ void ofApp::setup(){
 // TODO: ADD GAME STATES TO HELP WITH THIS
 void ofApp::update() {
 	// Reset lowest point.
+	/*
 	lowest_point_.x = 0;
 	lowest_point_.y = 0;
 
@@ -28,7 +29,7 @@ void ofApp::update() {
 		setPiecesToBoard();
 		makeNewPiece();
 	}
-
+	*/
 	//std::cout << lowest_point_.y << "/" << piece_type_ << std::endl;
 
 }

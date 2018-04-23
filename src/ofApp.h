@@ -152,6 +152,19 @@ class ofApp : public ofBaseApp, public ofThread {
 		void threadedFunction() {
 			while (isThreadRunning()) {
 				timer.waitNext();
+				lowest_point_.x = 0;
+				lowest_point_.y = 0;
+
+				bool canDrop = updateLowestPoint();
+
+				// Check if piece hit floor or another piece
+				if (lowest_point_.y == TETRIS_HEIGHT - 1 || !canDrop) {
+
+					// Set the board tiles on piece to true for drawing purposes.
+					setPiecesToBoard();
+					makeNewPiece();
+				}
+
 				piece_origin_.y++;
 			}
 		}
