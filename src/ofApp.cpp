@@ -5,12 +5,15 @@
 void ofApp::setup(){
 	makeNewPiece();
 
-	timer = new Scheduler(&piece_origin_);
+	timer.setPeriodicEvent(700000000);
+	startThread();
 }
 
 //--------------------------------------------------------------
 // TODO: UPDATE ONLY ONCE A SECOND BY PUTTING THIS STUFF INSIDE 
 //       SCHEDULER BY MAKING THIS OFAPP A SCHEDULER
+// TODO: HANDLE GAME LOSS 
+// TODO: ADD GAME STATES TO HELP WITH THIS
 void ofApp::update() {
 	// Reset lowest point.
 	lowest_point_.x = 0;

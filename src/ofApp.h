@@ -13,29 +13,7 @@ const int TETRIS_HEIGHT = 21;
 const int TETRIS_START_X = 100;
 const int TETRIS_START_Y = 50;
 
-class ofApp : public ofBaseApp {
-	
-	// Scheduler used for making piece automatically fall.
-	// Idea from http://openframeworks.cc/documentation/utils/ofTimer/
-	class Scheduler : public ofThread {
-	public:
-		Scheduler(Point *piece) {
-			piece_origin_ = piece;
-
-			// fall every 0.7 seconds
-			timer.setPeriodicEvent(700000000);
-			startThread();
-		}
-	private:
-		ofTimer timer;
-		Point *piece_origin_;
-		void threadedFunction() {
-			while (isThreadRunning()) {
-				timer.waitNext();
-				piece_origin_->y++;
-			}
-		}
-	};
+class ofApp : public ofBaseApp, public ofThread {
 	
 	enum Direction {
 		LEFT,
@@ -132,7 +110,7 @@ class ofApp : public ofBaseApp {
 	int piece_type_;
 	int piece_rotation_;
 
-	Scheduler *timer;
+	ofTimer timer;
 
 	public:
 		
@@ -166,4 +144,15 @@ class ofApp : public ofBaseApp {
 		bool rowIsEmpty(int row);
 		bool updateLowestPoint();
 		void setPiecesToBoard();
+
+		// ---- Thread for auto piece drop ----
+
+		// Scheduler used for making piece automatically fall.
+		// Idea from http://openframeworks.cc/documentation/utils/ofTimer/
+		void threadedFunction() {
+			while (isThreadRunning()) {
+				timer.waitNext();
+				piece_origin_.y++;
+			}
+		}
 };
