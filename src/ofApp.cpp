@@ -250,7 +250,6 @@ void ofApp::hardDrop() {
 
 /*
 	Helper function for moving the piece left or right. 
-	UNDONE: Fix for legal left and right movements into other pieces.
 */
 void ofApp::horizontalMove(Direction direction) {	
 
@@ -285,9 +284,7 @@ void ofApp::horizontalMove(Direction direction) {
 	pretty self-explanatory, clears the rows possible and drops above pieces down
 */
 
-// TODO: CHECK HOW TO UPDATE CORRECTLY
 void ofApp::clearRows() {
-	std::cout << "called once" << std::endl;
 
 	// Clear up to 4 rows.
 	for (int rowToCheck = lowest_point_.y, i = 0; i < 4; rowToCheck--, i++) {
@@ -295,8 +292,6 @@ void ofApp::clearRows() {
 
 		// Make sure the whole row is there.
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
-			std::cout << rowToCheck;
-			std::cout << board_[col][rowToCheck] << std::endl;
 
 			if (!board_[col][rowToCheck]) {
 				skipRow = true;
@@ -310,13 +305,46 @@ void ofApp::clearRows() {
 
 		// If entire row was there, clear it.
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
-			std::cout << "clearing row" << col ;
 			board_[col][rowToCheck] = false;
 		}
 	}
-
+	 
 	// Push above rows down to appropriate spot.
 	// TODO: IMPLEMENT
+	for (int rowToCheck = lowest_point_.y; rowToCheck > 0; rowToCheck--) {
+		if (!rowIsEmpty(rowToCheck)) {
+			continue;
+		}
+
+		// Check which row to pull down to ground.
+		int peekRow = rowToCheck;
+		while (rowIsEmpty(peekRow)) {
+			if (peekRow == 0) {
+				return;
+			}
+			peekRow--;
+		}
+
+		// "Drop" the row down to the ground.
+		for (int col = 0; col < TETRIS_WIDTH; col++) {
+			board_[col][rowToCheck] = board_[col][peekRow];
+			board_[col][peekRow] = false;
+		}
+	}
+	
+}
+
+/*
+	Returns true if an entire row is false. Otherwise, return false.
+*/
+bool ofApp::rowIsEmpty(int row) {
+	for (int col = 0; col < TETRIS_WIDTH; col++) {
+		if (board_[col][row]) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /*

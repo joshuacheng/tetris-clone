@@ -158,6 +158,7 @@ class ofApp : public ofBaseApp {
 		void hardDrop();
 		void horizontalMove(Direction direction);
 		void clearRows();
+		bool rowIsEmpty(int row);
 		bool updateLowestPoint();
 		void setPiecesToBoard();
 };
