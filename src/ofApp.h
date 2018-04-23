@@ -15,6 +15,11 @@ const int TETRIS_START_Y = 50;
 
 class ofApp : public ofBaseApp, public ofThread {
 	
+	enum GameState {
+		IN_PROGRESS,
+		PAUSED
+	};
+
 	enum Direction {
 		LEFT,
 		RIGHT
@@ -110,6 +115,7 @@ class ofApp : public ofBaseApp, public ofThread {
 	int piece_type_;
 	int piece_rotation_;
 
+	GameState game_state_;
 	ofTimer timer;
 
 	public:
@@ -152,20 +158,22 @@ class ofApp : public ofBaseApp, public ofThread {
 		void threadedFunction() {
 			while (isThreadRunning()) {
 				timer.waitNext();
-				lowest_point_.x = 0;
-				lowest_point_.y = 0;
+				if (game_state_ == IN_PROGRESS) {
+					lowest_point_.x = 0;
+					lowest_point_.y = 0;
 
-				bool canDrop = updateLowestPoint();
+					bool canDrop = updateLowestPoint();
 
-				// Check if piece hit floor or another piece
-				if (lowest_point_.y == TETRIS_HEIGHT - 1 || !canDrop) {
+					// Check if piece hit floor or another piece
+					if (lowest_point_.y == TETRIS_HEIGHT - 1 || !canDrop) {
 
-					// Set the board tiles on piece to true for drawing purposes.
-					setPiecesToBoard();
-					makeNewPiece();
+						// Set the board tiles on piece to true for drawing purposes.
+						setPiecesToBoard();
+						makeNewPiece();
+					}
+
+					piece_origin_.y++;
 				}
-
-				piece_origin_.y++;
 			}
 		}
 };

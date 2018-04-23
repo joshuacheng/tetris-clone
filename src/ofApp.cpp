@@ -4,6 +4,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	makeNewPiece();
+	game_state_ = IN_PROGRESS;
 
 	timer.setPeriodicEvent(700000000);
 	startThread();
@@ -39,6 +40,10 @@ void ofApp::draw(){
 
 	drawBoard();
 	drawPiece();
+	
+	if (game_state_ == PAUSED) {
+		ofDrawBitmapString("PAUSED", 500, 500);
+	}
 }
 
 //--------------------------------------------------------------
@@ -49,22 +54,33 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
 	int key_upper = toupper(key);
 
-	if (key_upper == 'X' || key_upper == OF_KEY_UP) {
+	// Pause and unpause
+	if (key_upper == 'P') {
+		if (game_state_ == IN_PROGRESS) {
+			game_state_ = PAUSED;
+		}
+		else if (game_state_ == PAUSED) {
+			game_state_ = IN_PROGRESS;
+		}
+		return;
+	}
+
+	if ((key_upper == 'X' || key_upper == OF_KEY_UP) && game_state_ == IN_PROGRESS) {
 		rotatePiece(RIGHT);
 	}
-	else if (key_upper == 'Z') {
+	else if (key_upper == 'Z' && game_state_ == IN_PROGRESS) {
 		rotatePiece(LEFT);
 	}
-	else if (key_upper == OF_KEY_RIGHT) {
+	else if (key_upper == OF_KEY_RIGHT && game_state_ == IN_PROGRESS) {
 		horizontalMove(RIGHT);
 	}
-	else if (key_upper == OF_KEY_LEFT) {
+	else if (key_upper == OF_KEY_LEFT && game_state_ == IN_PROGRESS) {
 		horizontalMove(LEFT);
 	}
-	else if (key_upper == OF_KEY_DOWN) {
+	else if (key_upper == OF_KEY_DOWN && game_state_ == IN_PROGRESS) {
 		softDrop();
 	}
-	else if (key_upper == ' ') { // ' ' is space bar
+	else if (key_upper == ' '  && game_state_ == IN_PROGRESS) { // ' ' is space bar
 		hardDrop();
 	}
 
