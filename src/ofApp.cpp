@@ -174,6 +174,15 @@ void ofApp::makeNewPiece() {
 	int random_piece = rand() % 6;
 	piece_type_ = random_piece;
 	piece_rotation_ = 0;
+
+	draw();
+
+	// Check if the piece cannot move upon creation and trigger game loss.
+	bool canMove = updateLowestPoint();
+
+	if (!canMove) {
+		std::cout << "LOSE" << std::endl;
+	}
 }
 
 /*
