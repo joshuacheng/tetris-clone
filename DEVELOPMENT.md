@@ -18,4 +18,8 @@ Week 2:
 - 4/21: Today I worked on row clearing, which took a surprisingly long time to figure out
         both because of my coding decisions and needing to keep track of what updates what in my
 		system. Imagine how much trouble multithreading is.
+- 4/22: The entire base game of Tetris is almost done, with the major features left being a way to lose,
+        colored pieces, wall kicks, and score. After that I will probably start working on the library
+		requirement, using sound to play Tetris music and/or ofxDatGUI to make a nice interface. If there
+		is still time afterwards, I will add piece queues and piece holds.
         
