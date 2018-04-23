@@ -17,7 +17,8 @@ class ofApp : public ofBaseApp, public ofThread {
 	
 	enum GameState {
 		IN_PROGRESS,
-		PAUSED
+		PAUSED,
+		GAME_OVER
 	};
 
 	enum Direction {
@@ -117,6 +118,7 @@ class ofApp : public ofBaseApp, public ofThread {
 
 	GameState game_state_;
 	ofTimer timer;
+	ofTrueTypeFont tetrisFont;
 
 	public:
 		

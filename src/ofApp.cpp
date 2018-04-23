@@ -5,6 +5,7 @@
 void ofApp::setup(){
 	makeNewPiece();
 	game_state_ = IN_PROGRESS;
+	tetrisFont.load("goodtime.ttf", 60);
 
 	timer.setPeriodicEvent(700000000);
 	startThread();
@@ -42,7 +43,12 @@ void ofApp::draw(){
 	drawPiece();
 	
 	if (game_state_ == PAUSED) {
-		ofDrawBitmapString("PAUSED", 500, 500);
+		ofSetColor(ofColor::black);
+		tetrisFont.drawString("PAUSED", TETRIS_START_X + 50, TETRIS_START_Y + 500);
+	}
+	else if (game_state_ == GAME_OVER) {
+		ofSetColor(ofColor::black);
+		tetrisFont.drawString("GAME OVER", TETRIS_START_X - 50, TETRIS_START_Y + 500);
 	}
 }
 
@@ -202,6 +208,7 @@ void ofApp::makeNewPiece() {
 
 	if (!canMove) {
 		std::cout << "LOSE" << std::endl;
+		game_state_ = GAME_OVER;
 	}
 }
 
