@@ -9,6 +9,8 @@ void ofApp::setup(){
 }
 
 //--------------------------------------------------------------
+// TODO: UPDATE ONLY ONCE A SECOND BY PUTTING THIS STUFF INSIDE 
+//       SCHEDULER BY MAKING THIS OFAPP A SCHEDULER
 void ofApp::update() {
 	// Reset lowest point.
 	lowest_point_.x = 0;
@@ -127,8 +129,12 @@ void ofApp::drawPiece() {
 	for (int i = 0; i < 4; i++) {
 		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][i].x;
 		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][i].y;
-		//board_[boardX][boardY] = true;
-		ofDrawRectangle(100 + boardX * BOX_SIZE + 2, 100 + boardY * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
+		
+		// Hide part of piece if above screen.
+		if (boardY == 0) {
+			continue;
+		}
+		ofDrawRectangle(TETRIS_START_X + boardX * BOX_SIZE + 2, TETRIS_START_Y + boardY * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 	}
 }
 
@@ -138,24 +144,22 @@ void ofApp::drawBoard() {
 	ofSetLineWidth(1);
 	ofSetColor(ofColor::black);
 	ofNoFill();
-	float start_x = 100;
-	float start_y = 100;
 
 
 	for (int i = 0; i < TETRIS_WIDTH; ++i) {
-		for (int j = 0; j < TETRIS_HEIGHT; ++j) {
+		for (int j = 1; j < TETRIS_HEIGHT; ++j) {
 
 			// Draw pieces already filled in blue for now.
 			// TODO: save colors somehow maybe color array
 			if (board_[i][j]) {
 				ofSetColor(ofColor::blue);
 				ofFill();
-				ofDrawRectangle(start_x + i * BOX_SIZE + 2, start_y + j * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
+				ofDrawRectangle(TETRIS_START_X + i * BOX_SIZE + 2, TETRIS_START_Y + j * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 				ofSetColor(ofColor::black);
 				ofNoFill();
 			}
 			else {
-				ofDrawRectangle(start_x + i * BOX_SIZE + 2, start_y + j * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
+				ofDrawRectangle(TETRIS_START_X + i * BOX_SIZE + 2, TETRIS_START_Y + j * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 			}
 		}
 	}
@@ -310,7 +314,6 @@ void ofApp::clearRows() {
 	}
 	 
 	// Push above rows down to appropriate spot.
-	// TODO: IMPLEMENT
 	for (int rowToCheck = lowest_point_.y; rowToCheck > 0; rowToCheck--) {
 		if (!rowIsEmpty(rowToCheck)) {
 			continue;

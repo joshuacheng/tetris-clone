@@ -7,11 +7,16 @@
 
 const int BOX_SIZE = 50;
 const int TETRIS_WIDTH = 10;
-const int TETRIS_HEIGHT = 20;
+const int TETRIS_HEIGHT = 21;
+
+// Where to start drawing the tetris board.
+const int TETRIS_START_X = 100;
+const int TETRIS_START_Y = 50;
 
 class ofApp : public ofBaseApp {
 	
 	// Scheduler used for making piece automatically fall.
+	// Idea from http://openframeworks.cc/documentation/utils/ofTimer/
 	class Scheduler : public ofThread {
 	public:
 		Scheduler(Point *piece) {
