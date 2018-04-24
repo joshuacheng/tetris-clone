@@ -39,6 +39,7 @@ class ofApp : public ofBaseApp, public ofThread {
 
 	// TODO: probably change to color array
 	bool board_[TETRIS_WIDTH][TETRIS_HEIGHT];
+	ofColor board1_[TETRIS_WIDTH][TETRIS_HEIGHT];
 
 	/* 
 	    pointRotations[piece_type][number of rotations][points in specific rotation]
@@ -109,6 +110,14 @@ class ofApp : public ofBaseApp, public ofThread {
 		}
 	};
 
+	ofColor colors[7] = { ofColor::red,
+						ofColor::magenta,
+						ofColor::greenYellow,
+						ofColor::darkCyan,
+						ofColor::aqua,
+						ofColor::brown,
+						ofColor::teal };
+
 	Point piece_origin_;
 
 	/*
@@ -125,9 +134,7 @@ class ofApp : public ofBaseApp, public ofThread {
 	ofTrueTypeFont tetrisFont;
 	ofxDatGuiLabel *score_label_;
 	
-
 	public:
-		
 		void setup();
 		void update();
 		void draw();
@@ -159,6 +166,9 @@ class ofApp : public ofBaseApp, public ofThread {
 		bool updateLowestPoint();
 		void setPiecesToBoard();
 		void reset();
+
+		// ---- Colors ----
+		bool isColorDefault(const ofColor &color);
 
 		// ---- Thread for auto piece drop ----
 
