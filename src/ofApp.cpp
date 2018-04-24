@@ -4,8 +4,9 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	player_score_ = 0;
-//	score_label_ = new ofxDatGuiLabel("SCORE: " + std::to_string(player_score_));
-//	score_label_->setPosition(1000, 1000);
+	score_label_ = new ofxDatGuiLabel("SCORE: " + std::to_string(player_score_));
+	score_label_->setPosition(1000, 1000);
+	score_label_->setTheme(new ofxDatGuiThemeSmoke());
 
 	makeNewPiece();
 	game_state_ = IN_PROGRESS;
@@ -50,8 +51,8 @@ void ofApp::draw(){
 
 	drawBoard();
 	drawPiece();
-//	score_label_->setLabel("SCORE: " + std::to_string(player_score_));
-//	score_label_->draw();
+	score_label_->setLabel("SCORE: " + std::to_string(player_score_));
+	score_label_->draw();
 	
 	if (game_state_ == PAUSED) {
 		ofSetColor(ofColor::black);
@@ -89,19 +90,19 @@ void ofApp::keyPressed(int key){
 		return;
 	}
 
-	if ((key_upper == 'X' || key_upper == OF_KEY_UP) && game_state_ == IN_PROGRESS) {
+	if ((key_upper == 'X' || key == OF_KEY_UP) && game_state_ == IN_PROGRESS) {
 		rotatePiece(RIGHT);
 	}
 	else if (key_upper == 'Z' && game_state_ == IN_PROGRESS) {
 		rotatePiece(LEFT);
 	}
-	else if (key_upper == OF_KEY_RIGHT && game_state_ == IN_PROGRESS) {
+	else if (key == OF_KEY_RIGHT && game_state_ == IN_PROGRESS) {
 		horizontalMove(RIGHT);
 	}
-	else if (key_upper == OF_KEY_LEFT && game_state_ == IN_PROGRESS) {
+	else if (key == OF_KEY_LEFT && game_state_ == IN_PROGRESS) {
 		horizontalMove(LEFT);
 	}
-	else if (key_upper == OF_KEY_DOWN && game_state_ == IN_PROGRESS) {
+	else if (key == OF_KEY_DOWN && game_state_ == IN_PROGRESS) {
 		softDrop();
 	}
 	else if (key_upper == ' '  && game_state_ == IN_PROGRESS) { // ' ' is space bar
@@ -366,9 +367,12 @@ void ofApp::clearRows() {
 		// If entire row was there, clear it.
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
 			board_[col][rowToCheck] = false;
-			rowsCleared++;
 		}
+
+		rowsCleared++;
 	}
+
+	player_score_ += ROW_MULTIPLIER * rowsCleared;
 	 
 	// Push above rows down to appropriate spot.
 	for (int rowToCheck = lowest_point_.y; rowToCheck > 0; rowToCheck--) {
@@ -392,8 +396,6 @@ void ofApp::clearRows() {
 		}
 	}
 
-	player_score_ += ROW_MULTIPLIER * rowsCleared;
-	
 }
 
 /*
