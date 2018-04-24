@@ -3,15 +3,18 @@
 #include "ofMain.h"
 //#include "TetrisBoard.h"
 #include "Piece.h"
+#include "ofxDatGui.h"
 
 
 const int BOX_SIZE = 50;
 const int TETRIS_WIDTH = 10;
 const int TETRIS_HEIGHT = 21;
 
-// Where to start drawing the tetris board.
+// Where to draw the tetris board.
 const int TETRIS_START_X = 100;
 const int TETRIS_START_Y = 50;
+
+const int ROW_MULTIPLIER = 100;
 
 class ofApp : public ofBaseApp, public ofThread {
 	
@@ -34,7 +37,7 @@ class ofApp : public ofBaseApp, public ofThread {
 		I, J, L, O, S, T, Z
 	};
 
-	//TetrisBoard board_;
+	// TODO: probably change to color array
 	bool board_[TETRIS_WIDTH][TETRIS_HEIGHT];
 
 	/* 
@@ -115,10 +118,13 @@ class ofApp : public ofBaseApp, public ofThread {
 	Point lowest_point_;
 	int piece_type_;
 	int piece_rotation_;
+	int player_score_;
 
 	GameState game_state_;
 	ofTimer timer;
 	ofTrueTypeFont tetrisFont;
+	ofxDatGuiLabel *score_label_;
+	
 
 	public:
 		
@@ -152,30 +158,11 @@ class ofApp : public ofBaseApp, public ofThread {
 		bool rowIsEmpty(int row);
 		bool updateLowestPoint();
 		void setPiecesToBoard();
+		void reset();
 
 		// ---- Thread for auto piece drop ----
 
 		// Scheduler used for making piece automatically fall.
 		// Idea from http://openframeworks.cc/documentation/utils/ofTimer/
-		void threadedFunction() {
-			while (isThreadRunning()) {
-				timer.waitNext();
-				if (game_state_ == IN_PROGRESS) {
-					lowest_point_.x = 0;
-					lowest_point_.y = 0;
-
-					bool canDrop = updateLowestPoint();
-
-					// Check if piece hit floor or another piece
-					if (lowest_point_.y == TETRIS_HEIGHT - 1 || !canDrop) {
-
-						// Set the board tiles on piece to true for drawing purposes.
-						setPiecesToBoard();
-						makeNewPiece();
-					}
-
-					piece_origin_.y++;
-				}
-			}
-		}
+		void threadedFunction();
 };

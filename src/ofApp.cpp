@@ -3,37 +3,46 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+	player_score_ = 0;
+//	score_label_ = new ofxDatGuiLabel("SCORE: " + std::to_string(player_score_));
+//	score_label_->setPosition(1000, 1000);
+
 	makeNewPiece();
 	game_state_ = IN_PROGRESS;
-	tetrisFont.load("goodtime.ttf", 60);
 
 	timer.setPeriodicEvent(700000000);
 	startThread();
 }
 
 //--------------------------------------------------------------
-// TODO: UPDATE ONLY ONCE A SECOND BY PUTTING THIS STUFF INSIDE 
-//       SCHEDULER BY MAKING THIS OFAPP A SCHEDULER
-// TODO: HANDLE GAME LOSS 
-// TODO: ADD GAME STATES TO HELP WITH THIS
+
+/*
+	Because Tetris is a tick-based game that does not need continuous
+	updates, my "updating" all happens inside threadedFunction().
+*/
 void ofApp::update() {
-	// Reset lowest point.
-	/*
-	lowest_point_.x = 0;
-	lowest_point_.y = 0;
+}
 
-	bool canDrop = updateLowestPoint();
+void ofApp::threadedFunction() {
+	while (isThreadRunning()) {
+		timer.waitNext();
+		if (game_state_ == IN_PROGRESS) {
+			lowest_point_.x = 0;
+			lowest_point_.y = 0;
 
-	// Check if piece hit floor or another piece
-	if (lowest_point_.y == TETRIS_HEIGHT - 1 || !canDrop) {
+			bool canDrop = updateLowestPoint();
 
-		// Set the board tiles on piece to true for drawing purposes.
-		setPiecesToBoard();
-		makeNewPiece();
+			// Check if piece hit floor or another piece
+			if (lowest_point_.y == TETRIS_HEIGHT - 1 || !canDrop) {
+
+				// Set the board tiles on piece to true for drawing purposes.
+				setPiecesToBoard();
+				makeNewPiece();
+			}
+
+			piece_origin_.y++;
+		}
 	}
-	*/
-	//std::cout << lowest_point_.y << "/" << piece_type_ << std::endl;
-
 }
 
 //--------------------------------------------------------------
@@ -41,6 +50,8 @@ void ofApp::draw(){
 
 	drawBoard();
 	drawPiece();
+//	score_label_->setLabel("SCORE: " + std::to_string(player_score_));
+//	score_label_->draw();
 	
 	if (game_state_ == PAUSED) {
 		ofSetColor(ofColor::black);
@@ -48,7 +59,10 @@ void ofApp::draw(){
 	}
 	else if (game_state_ == GAME_OVER) {
 		ofSetColor(ofColor::black);
+		tetrisFont.load("goodtime.ttf", 60);
 		tetrisFont.drawString("GAME OVER", TETRIS_START_X - 50, TETRIS_START_Y + 500);
+		tetrisFont.load("goodtime.ttf", 30);
+		tetrisFont.drawString("Press R to restart game", TETRIS_START_X - 50, TETRIS_START_Y + 600);
 	}
 }
 
@@ -59,6 +73,10 @@ void ofApp::draw(){
 
 void ofApp::keyPressed(int key){
 	int key_upper = toupper(key);
+
+	if (game_state_ == GAME_OVER && key_upper == 'R') {
+		reset();
+	}
 
 	// Pause and unpause
 	if (key_upper == 'P') {
@@ -129,7 +147,7 @@ void ofApp::mouseExited(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-	
+
 }
 
 //--------------------------------------------------------------
@@ -321,10 +339,12 @@ void ofApp::horizontalMove(Direction direction) {
 
 /*
 	This method is called whenever a piece falls into place, NOT on every update.
-	pretty self-explanatory, clears the rows possible and drops above pieces down
+	pretty self-explanatory, clears the rows possible and drops above pieces down.
+	Also awards score to the player.
 */
 
 void ofApp::clearRows() {
+	int rowsCleared = 0;
 
 	// Clear up to 4 rows.
 	for (int rowToCheck = lowest_point_.y, i = 0; i < 4; rowToCheck--, i++) {
@@ -346,6 +366,7 @@ void ofApp::clearRows() {
 		// If entire row was there, clear it.
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
 			board_[col][rowToCheck] = false;
+			rowsCleared++;
 		}
 	}
 	 
@@ -370,6 +391,8 @@ void ofApp::clearRows() {
 			board_[col][peekRow] = false;
 		}
 	}
+
+	player_score_ += ROW_MULTIPLIER * rowsCleared;
 	
 }
 
@@ -419,4 +442,20 @@ void ofApp::setPiecesToBoard() {
 		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
 		board_[boardX][boardY] = true;
 	}
+}
+
+/*
+	Reset and restart the game.
+*/
+void ofApp::reset() {
+
+	// Clear the board.
+	for (int row = 0; row < TETRIS_HEIGHT; row++) {
+		for (int col = 0; col < TETRIS_WIDTH; col++) {
+			board_[col][row] = false;
+		}
+	}
+
+	game_state_ = IN_PROGRESS;
+	makeNewPiece();
 }
