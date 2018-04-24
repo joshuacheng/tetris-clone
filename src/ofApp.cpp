@@ -4,7 +4,7 @@
 /*
 	TODO: 
 	1. Colors [DONE]
-	1.5. FIX SCORE LABEL MAYBE JUST USE BITMAPSTRING
+	1.5. FIX SCORE LABEL MAYBE JUST USE TRUETYPEFONT [DONE]
 	2. Ghost pieces (+ toggling them)
 	3. Wall kicks
 	4. Game sound
@@ -14,8 +14,9 @@
 */
 
 //--------------------------------------------------------------
-void ofApp::setup(){
+void ofApp::setup() {
 	player_score_ = 0;
+	show_ghosts_ = true;
 
 	tetris_font_.load("goodtime.ttf", 60);
 	score_font_.load("tetris_block.ttf", 30);
@@ -185,27 +186,61 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 */
 void ofApp::drawPiece() {
 	
-	
-
 	for (int i = 0; i < 4; i++) {
 		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][i].x;
 		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][i].y;
-		
+
 		// Hide part of piece if above screen.
 		if (boardY == 0) {
 			continue;
-		}		
+		}
 
 		// Draw in the piece.
 		ofSetColor(colors[piece_type_]);
 		ofFill();
 		ofDrawRectangle(TETRIS_START_X + boardX * BOX_SIZE + 1, TETRIS_START_Y + boardY * BOX_SIZE + 1, BOX_SIZE - 1, BOX_SIZE - 1);
-	
+
 		// Draw the piece border.
 		ofSetColor(ofColor::black);
 		ofNoFill();
 		ofDrawRectangle(TETRIS_START_X + boardX * BOX_SIZE + 2, TETRIS_START_Y + boardY * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
+		
+		if (show_ghosts_) {
+			drawGhostPiece();
+		}
 	}
+}
+
+void ofApp::drawGhostPiece() {
+	bool canDrop = true;
+	int peeksAhead = 0;
+
+	ofSetLineWidth(10);
+
+	while (canDrop) {
+		for (int piecePart = 0; piecePart < 4; piecePart++) {
+			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
+			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y + peeksAhead;
+
+			// Once we've found the farthest we can drop down..
+			if (boardY >= TETRIS_HEIGHT - 1 || !isColorDefault(board_[boardX][boardY + 1])) {
+				ofSetColor(ofColor::darkGray);
+				
+				// Draw the ghost piece.
+				for (int part = 0; part < 4; part++) {
+					int x = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][part].x;
+					int y = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][part].y + peeksAhead;
+					ofDrawRectangle(TETRIS_START_X + x * BOX_SIZE, TETRIS_START_Y + y * BOX_SIZE, BOX_SIZE, BOX_SIZE);
+				}
+
+				// Clean up line width and get out.
+				ofSetLineWidth(1);
+				return;
+			}
+		}
+		peeksAhead++;
+	}
+
 }
 
 

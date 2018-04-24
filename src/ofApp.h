@@ -126,6 +126,7 @@ class ofApp : public ofBaseApp, public ofThread {
 	int piece_type_;
 	int piece_rotation_;
 	int player_score_;
+	bool show_ghosts_;
 
 	GameState game_state_;
 	ofTimer timer_;
@@ -151,6 +152,7 @@ class ofApp : public ofBaseApp, public ofThread {
 
 		// ---- Draw ----
 		void drawPiece();
+		void drawGhostPiece();
 		void drawBoard();
 
 		// ---- Piece manipulation ----
