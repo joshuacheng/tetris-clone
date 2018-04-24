@@ -25,3 +25,6 @@ Week 2:
 - 4/23: I am having an issue where if I register an ofxDatGuiLabel, none of my arrow keys work. I have 
         confirmed this by simply commenting out the one line where I register the label. Weird bug. Maybe 
 		for now I'll just use drawBitMapString to display score instead.
+  - Update: Apparently adding the label changed what key the computer thought I was pressing, 
+            so instead of registering an arrow key press it thought it was some other random button. It 
+			was a simple manual fix.
