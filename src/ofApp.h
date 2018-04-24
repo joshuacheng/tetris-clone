@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-//#include "TetrisBoard.h"
 #include "Piece.h"
 #include "ofxDatGui.h"
 
@@ -38,7 +37,7 @@ class ofApp : public ofBaseApp, public ofThread {
 	};
 
 	// TODO: probably change to color array
-	ofColor board1_[TETRIS_WIDTH][TETRIS_HEIGHT];
+	ofColor board_[TETRIS_WIDTH][TETRIS_HEIGHT];
 
 	/* 
 	    pointRotations[piece_type][number of rotations][points in specific rotation]
@@ -129,10 +128,9 @@ class ofApp : public ofBaseApp, public ofThread {
 	int player_score_;
 
 	GameState game_state_;
-	ofTimer timer;
+	ofTimer timer_;
 	ofTrueTypeFont tetris_font_;
 	ofTrueTypeFont score_font_;
-	ofxDatGuiLabel *score_label_;
 	
 	public:
 		void setup();

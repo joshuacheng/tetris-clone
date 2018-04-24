@@ -16,9 +16,6 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	player_score_ = 0;
-//	score_label_ = new ofxDatGuiLabel("SCORE: " + std::to_string(player_score_));
-//	score_label_->setPosition(1000, 1000);
-//	score_label_->setTheme(new ofxDatGuiThemeSmoke());
 
 	tetris_font_.load("goodtime.ttf", 60);
 	score_font_.load("tetris_block.ttf", 30);
@@ -26,7 +23,7 @@ void ofApp::setup(){
 	makeNewPiece();
 	game_state_ = IN_PROGRESS;
 
-	timer.setPeriodicEvent(700000000);
+	timer_.setPeriodicEvent(700000000);
 	startThread();
 	
 }
@@ -42,7 +39,7 @@ void ofApp::update() {
 
 void ofApp::threadedFunction() {
 	while (isThreadRunning()) {
-		timer.waitNext();
+		timer_.waitNext();
 		if (game_state_ == IN_PROGRESS) {
 			lowest_point_.x = 0;
 			lowest_point_.y = 0;
@@ -69,13 +66,10 @@ void ofApp::draw(){
 	drawBoard();
 	drawPiece();
 
-	// FIX THIS LINE
-	//score_label_->setLabel("SCORE: " + std::to_string(player_score_));
-	//score_label_->draw();
 	ofColor score_color = colors[piece_type_];
 	score_color.setBrightness(192);
 	ofSetColor(score_color);
-	score_font_.drawString("SCORE: " + std::to_string(player_score_), 1000, 1000);
+	score_font_.drawString("SCORE " + std::to_string(player_score_), 1000, 1000);
 	
 	if (game_state_ == PAUSED) {
 		ofSetColor(ofColor::black);
@@ -226,8 +220,8 @@ void ofApp::drawBoard() {
 		for (int j = 1; j < TETRIS_HEIGHT; ++j) {
 
 			// Draw board with color
-			if (!isColorDefault(board1_[i][j])) {
-				ofSetColor(board1_[i][j]);
+			if (!isColorDefault(board_[i][j])) {
+				ofSetColor(board_[i][j]);
 				ofFill();
 				ofDrawRectangle(TETRIS_START_X + i * BOX_SIZE + 1, TETRIS_START_Y + j * BOX_SIZE + 1, BOX_SIZE - 1, BOX_SIZE - 1);
 				ofSetColor(ofColor::black);
@@ -299,7 +293,7 @@ void ofApp::softDrop() {
 		int y_spot_below = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y + 1;
 		
 		// If the piece moving down would go off screen or hit another block, don't.
-		if (y_spot_below >= TETRIS_HEIGHT || !isColorDefault(board1_[boardX][y_spot_below])) {
+		if (y_spot_below >= TETRIS_HEIGHT || !isColorDefault(board_[boardX][y_spot_below])) {
 			return;
 		}
 	}
@@ -324,7 +318,7 @@ void ofApp::hardDrop() {
 			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
 			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y + peeksAhead;
 			
-			if (boardY >= TETRIS_HEIGHT - 1 || !isColorDefault(board1_[boardX][boardY + 1])) {
+			if (boardY >= TETRIS_HEIGHT - 1 || !isColorDefault(board_[boardX][boardY + 1])) {
 				piece_origin_.y += spacesDropped;
 				setPiecesToBoard();
 				updateLowestPoint();
@@ -350,7 +344,7 @@ void ofApp::horizontalMove(Direction direction) {
 			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
 
 			// If the piece moving right would go off screen or hit a piece, don't.
-			if (boardX + 1 >= TETRIS_WIDTH || !isColorDefault(board1_[boardX + 1][boardY])) {
+			if (boardX + 1 >= TETRIS_WIDTH || !isColorDefault(board_[boardX + 1][boardY])) {
 				return;
 			}
 		}
@@ -361,7 +355,7 @@ void ofApp::horizontalMove(Direction direction) {
 			int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
 			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
 
-			if (boardX - 1 < 0 || !isColorDefault(board1_[boardX - 1][boardY])) {
+			if (boardX - 1 < 0 || !isColorDefault(board_[boardX - 1][boardY])) {
 				return;
 			}
 		}
@@ -386,7 +380,7 @@ void ofApp::clearRows() {
 		// Make sure the whole row is there.
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
 
-			if (isColorDefault(board1_[col][rowToCheck])) {
+			if (isColorDefault(board_[col][rowToCheck])) {
 				skipRow = true;
 				break;
 			}
@@ -398,7 +392,7 @@ void ofApp::clearRows() {
 
 		// If entire row was there, clear it.
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
-			board1_[col][rowToCheck].set(ofColor());
+			board_[col][rowToCheck].set(ofColor());
 		}
 
 		rowsCleared++;
@@ -423,8 +417,8 @@ void ofApp::clearRows() {
 
 		// "Drop" the row down to the ground.
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
-			board1_[col][rowToCheck] = board1_[col][peekRow];
-			board1_[col][peekRow].set(ofColor());
+			board_[col][rowToCheck] = board_[col][peekRow];
+			board_[col][peekRow].set(ofColor());
 		}
 	}
 
@@ -435,7 +429,7 @@ void ofApp::clearRows() {
 */
 bool ofApp::rowIsEmpty(int row) {
 	for (int col = 0; col < TETRIS_WIDTH; col++) {
-		if (!isColorDefault(board1_[col][row])) {
+		if (!isColorDefault(board_[col][row])) {
 			return false;
 		}
 	}
@@ -459,7 +453,7 @@ bool ofApp::updateLowestPoint() {
 		}
 
 		// If any part of the current piece is obstructed one spot below:
-		if (!isColorDefault(board1_[boardX][boardY + 1])) {
+		if (!isColorDefault(board_[boardX][boardY + 1])) {
 			canDrop = false;
 		}
 	}
@@ -474,7 +468,7 @@ void ofApp::setPiecesToBoard() {
 	for (int piecePart = 0; piecePart < 4; piecePart++) {
 		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
 		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
-		board1_[boardX][boardY] = colors[piece_type_];
+		board_[boardX][boardY] = colors[piece_type_];
 	}
 }
 
@@ -486,7 +480,7 @@ void ofApp::reset() {
 	// Clear the board.
 	for (int row = 0; row < TETRIS_HEIGHT; row++) {
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
-			board1_[col][row].set(ofColor());
+			board_[col][row].set(ofColor());
 		}
 	}
 
