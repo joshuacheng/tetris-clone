@@ -22,4 +22,6 @@ Week 2:
         colored pieces, wall kicks, and score. After that I will probably start working on the library
 		requirement, using sound to play Tetris music and/or ofxDatGUI to make a nice interface. If there
 		is still time afterwards, I will add piece queues and piece holds.
-        
+- 4/23: I am having an issue where if I register an ofxDatGuiLabel, none of my arrow keys work. I have 
+        confirmed this by simply commenting out the one line where I register the label. Weird bug. Maybe 
+		for now I'll just use drawBitMapString to display score instead.
