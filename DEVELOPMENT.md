@@ -28,3 +28,6 @@ Week 2:
   - Update: Apparently adding the label changed what key the computer thought I was pressing, 
             so instead of registering an arrow key press it thought it was some other random button. It 
 			was a simple manual fix.
+- 4/24: Ghost pieces have been added and color have been added. Ghost pieces are based on similar logic
+        to the hard drop method, which makes sense because both methods need to know where the piece *would*
+		fall. Lots of tweaks were needed to color to make sure I don't blind myself playing this game.
