@@ -6,10 +6,10 @@ Rough Goals Outline:
 2. Decide what game to make and start implementing the core game features.
 3. Finish up the game and think about add-ons to make the game more full.
 
-Updated Roadmap (4/18):
+Updated Roadmap (4/24):
 - 4/18: Finish up all piece movements. (mostly done) 
 - 4/19: Implement timer-based falling. (need to start)
 - 4/20: Implement piece collisions and row-clearing. (piece collisions almost done)
 - 4/21: Implement Tetris extras (wall kicks, score, piece-saving, maybe spins, etc.)
 - 4/22: Start working on required libraries (DatGUI, game sound)
-
+- 4/24: Work on ghost pieces, colors, wall kicks, and game sound.
