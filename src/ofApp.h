@@ -38,7 +38,6 @@ class ofApp : public ofBaseApp, public ofThread {
 	};
 
 	// TODO: probably change to color array
-	bool board_[TETRIS_WIDTH][TETRIS_HEIGHT];
 	ofColor board1_[TETRIS_WIDTH][TETRIS_HEIGHT];
 
 	/* 
@@ -112,10 +111,10 @@ class ofApp : public ofBaseApp, public ofThread {
 
 	ofColor colors[7] = { ofColor::red,
 						ofColor::magenta,
-						ofColor::greenYellow,
-						ofColor::darkCyan,
-						ofColor::aqua,
-						ofColor::brown,
+						ofColor::yellow,
+						ofColor::cyan,
+						ofColor::blue,
+						ofColor::green,
 						ofColor::teal };
 
 	Point piece_origin_;
@@ -131,7 +130,8 @@ class ofApp : public ofBaseApp, public ofThread {
 
 	GameState game_state_;
 	ofTimer timer;
-	ofTrueTypeFont tetrisFont;
+	ofTrueTypeFont tetris_font_;
+	ofTrueTypeFont score_font_;
 	ofxDatGuiLabel *score_label_;
 	
 	public:

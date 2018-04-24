@@ -16,11 +16,12 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	player_score_ = 0;
-	score_label_ = new ofxDatGuiLabel("SCORE: " + std::to_string(player_score_));
-	score_label_->setPosition(1000, 1000);
-	score_label_->setTheme(new ofxDatGuiThemeSmoke());
+//	score_label_ = new ofxDatGuiLabel("SCORE: " + std::to_string(player_score_));
+//	score_label_->setPosition(1000, 1000);
+//	score_label_->setTheme(new ofxDatGuiThemeSmoke());
 
-	tetrisFont.load("goodtime.ttf", 60);
+	tetris_font_.load("goodtime.ttf", 60);
+	score_font_.load("tetris_block.ttf", 30);
 
 	makeNewPiece();
 	game_state_ = IN_PROGRESS;
@@ -71,16 +72,21 @@ void ofApp::draw(){
 	// FIX THIS LINE
 	//score_label_->setLabel("SCORE: " + std::to_string(player_score_));
 	//score_label_->draw();
+	ofColor score_color = colors[piece_type_];
+	score_color.setBrightness(192);
+	ofSetColor(score_color);
+	score_font_.drawString("SCORE: " + std::to_string(player_score_), 1000, 1000);
 	
 	if (game_state_ == PAUSED) {
 		ofSetColor(ofColor::black);
-		tetrisFont.drawString("PAUSED", TETRIS_START_X + 50, TETRIS_START_Y + 500);
+		tetris_font_.drawString("PAUSED", TETRIS_START_X + 50, TETRIS_START_Y + 500);
 	}
 	else if (game_state_ == GAME_OVER) {
 		ofSetColor(ofColor::black);
-		tetrisFont.drawString("GAME OVER", TETRIS_START_X - 50, TETRIS_START_Y + 500);
-		//tetrisFont.load("goodtime.ttf", 30);
-		tetrisFont.drawString("Press R to restart game", TETRIS_START_X - 50, TETRIS_START_Y + 600);
+		tetris_font_.load("goodtime.ttf", 60);
+		tetris_font_.drawString("GAME OVER", TETRIS_START_X - 50, TETRIS_START_Y + 500);
+		tetris_font_.load("goodtime.ttf", 30);
+		tetris_font_.drawString("Press R to restart game", TETRIS_START_X - 50, TETRIS_START_Y + 600);
 	}
 }
 
@@ -185,8 +191,7 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 */
 void ofApp::drawPiece() {
 	
-	ofSetColor(colors[piece_type_]);
-	ofFill();
+	
 
 	for (int i = 0; i < 4; i++) {
 		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][i].x;
@@ -195,7 +200,16 @@ void ofApp::drawPiece() {
 		// Hide part of piece if above screen.
 		if (boardY == 0) {
 			continue;
-		}
+		}		
+
+		// Draw in the piece.
+		ofSetColor(colors[piece_type_]);
+		ofFill();
+		ofDrawRectangle(TETRIS_START_X + boardX * BOX_SIZE + 1, TETRIS_START_Y + boardY * BOX_SIZE + 1, BOX_SIZE - 1, BOX_SIZE - 1);
+	
+		// Draw the piece border.
+		ofSetColor(ofColor::black);
+		ofNoFill();
 		ofDrawRectangle(TETRIS_START_X + boardX * BOX_SIZE + 2, TETRIS_START_Y + boardY * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 	}
 }
@@ -224,20 +238,6 @@ void ofApp::drawBoard() {
 				ofDrawRectangle(TETRIS_START_X + i * BOX_SIZE + 2, TETRIS_START_Y + j * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
 			}
 
-			// Draw pieces already filled in blue for now.
-			// TODO: save colors somehow maybe color array
-			/*
-			if (board_[i][j]) {
-				ofSetColor(ofColor::blue);
-				ofFill();
-				ofDrawRectangle(TETRIS_START_X + i * BOX_SIZE + 2, TETRIS_START_Y + j * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
-				ofSetColor(ofColor::black);
-				ofNoFill();
-			}
-			else {
-				ofDrawRectangle(TETRIS_START_X + i * BOX_SIZE + 2, TETRIS_START_Y + j * BOX_SIZE + 2, BOX_SIZE - 2, BOX_SIZE - 2);
-			}
-			*/
 		}
 	}
 }
@@ -248,7 +248,7 @@ void ofApp::makeNewPiece() {
 	lowest_point_.x = 0;
 	lowest_point_.y = 0;
 
-	int random_piece = rand() % 6;
+	int random_piece = rand() % 7;
 	piece_type_ = random_piece;
 	piece_rotation_ = 0;
 
@@ -297,12 +297,8 @@ void ofApp::softDrop() {
 	for (int piecePart = 0; piecePart < 4; piecePart++) {
 		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
 		int y_spot_below = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y + 1;
-		/*
+		
 		// If the piece moving down would go off screen or hit another block, don't.
-		if (y_spot_below >= TETRIS_HEIGHT || board_[boardX][y_spot_below]) {
-			return;
-		}
-		*/
 		if (y_spot_below >= TETRIS_HEIGHT || !isColorDefault(board1_[boardX][y_spot_below])) {
 			return;
 		}
@@ -402,7 +398,6 @@ void ofApp::clearRows() {
 
 		// If entire row was there, clear it.
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
-			//board_[col][rowToCheck] = false;
 			board1_[col][rowToCheck].set(ofColor());
 		}
 
@@ -428,8 +423,6 @@ void ofApp::clearRows() {
 
 		// "Drop" the row down to the ground.
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
-			//board_[col][rowToCheck] = board_[col][peekRow];
-			//board_[col][peekRow] = false;
 			board1_[col][rowToCheck] = board1_[col][peekRow];
 			board1_[col][peekRow].set(ofColor());
 		}
@@ -481,7 +474,6 @@ void ofApp::setPiecesToBoard() {
 	for (int piecePart = 0; piecePart < 4; piecePart++) {
 		int boardX = piece_origin_.x + pointRotations_[piece_type_][piece_rotation_][piecePart].x;
 		int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
-		//board_[boardX][boardY] = true;
 		board1_[boardX][boardY] = colors[piece_type_];
 	}
 }
@@ -494,7 +486,6 @@ void ofApp::reset() {
 	// Clear the board.
 	for (int row = 0; row < TETRIS_HEIGHT; row++) {
 		for (int col = 0; col < TETRIS_WIDTH; col++) {
-			//board_[col][row] = false;
 			board1_[col][row].set(ofColor());
 		}
 	}
