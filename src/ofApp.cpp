@@ -5,9 +5,10 @@
 	TODO: 
 	1. Colors [DONE]
 	1.5. FIX SCORE LABEL MAYBE JUST USE TRUETYPEFONT [DONE]
-	2. Ghost pieces (+ toggling them)
+	2. Ghost pieces [DONE]
+	2.5 Toggle ghost pieces
 	3. Wall kicks
-	4. Game sound
+	4. Game sound [NEXT]
 	5. do a bunch of refactoring
 	6. better UI
 
@@ -20,6 +21,9 @@ void ofApp::setup() {
 
 	tetris_font_.load("goodtime.ttf", 60);
 	score_font_.load("tetris_block.ttf", 30);
+	music_player_.load("tetris_music.mp3");
+	music_player_.setLoop(true);
+	music_player_.play();
 
 	makeNewPiece();
 	game_state_ = IN_PROGRESS;
@@ -88,7 +92,6 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 // TODO: don't let player hold down to keep rotating piece
 // reference solution: https://forum.openframeworks.cc/t/multiple-keys-and-key-related-questions/2034/2
-// TODO: implement ghost
 
 void ofApp::keyPressed(int key){
 	int key_upper = toupper(key);
@@ -211,6 +214,9 @@ void ofApp::drawPiece() {
 	}
 }
 
+/*
+	Draws the projection of where your piece will fall.
+*/
 void ofApp::drawGhostPiece() {
 	bool canDrop = true;
 	int peeksAhead = 0;
@@ -224,7 +230,7 @@ void ofApp::drawGhostPiece() {
 
 			// Once we've found the farthest we can drop down..
 			if (boardY >= TETRIS_HEIGHT - 1 || !isColorDefault(board_[boardX][boardY + 1])) {
-				ofSetColor(ofColor::darkGray);
+				ofSetColor(ofColor::darkBlue);
 				
 				// Draw the ghost piece.
 				for (int part = 0; part < 4; part++) {
@@ -234,7 +240,7 @@ void ofApp::drawGhostPiece() {
 				}
 
 				// Clean up line width and get out.
-				ofSetLineWidth(1);
+				ofSetLineWidth(2);
 				return;
 			}
 		}
@@ -243,10 +249,8 @@ void ofApp::drawGhostPiece() {
 
 }
 
-
-
 void ofApp::drawBoard() {
-	ofSetLineWidth(1);
+	ofSetLineWidth(2);
 	ofSetColor(ofColor::black);
 	ofNoFill();
 

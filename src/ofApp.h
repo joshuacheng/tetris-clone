@@ -132,6 +132,7 @@ class ofApp : public ofBaseApp, public ofThread {
 	ofTimer timer_;
 	ofTrueTypeFont tetris_font_;
 	ofTrueTypeFont score_font_;
+	ofSoundPlayer music_player_;
 	
 	public:
 		void setup();
