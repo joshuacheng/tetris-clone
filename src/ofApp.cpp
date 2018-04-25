@@ -7,8 +7,8 @@
 	1.5. FIX SCORE LABEL MAYBE JUST USE TRUETYPEFONT [DONE]
 	2. Ghost pieces [DONE]
 	2.5 Toggle ghost pieces
-	3. Wall kicks
-	4. Game sound [NEXT]
+	3. Wall kicks [DONE]
+	4. Game sound [DONE]
 	5. Make background black i guess
 	6. do a bunch of refactoring
 	7. better UI
@@ -40,7 +40,6 @@ void ofApp::setup() {
 
 	timer_.setPeriodicEvent(700000000);
 	startThread();
-	
 }
 
 //--------------------------------------------------------------
@@ -309,6 +308,7 @@ void ofApp::makeNewPiece() {
 
 /*
 	Rotates a piece based on the rotation enum.
+	Wall kicks if piece is up against a wall.
 */
 
 void ofApp::rotatePiece(Direction rotation) {
@@ -320,13 +320,21 @@ void ofApp::rotatePiece(Direction rotation) {
 	else if (rotation == LEFT) {
 		new_rotation = ((piece_rotation_ - 1) % 4 + 4) % 4;
 	}
-	// TODO: implement kick instead of do nothing
+
 	for (int piecePart = 0; piecePart < 4; piecePart++) {
 		int boardX = piece_origin_.x + pointRotations_[piece_type_][new_rotation][piecePart].x;
 		int boardY = piece_origin_.y + pointRotations_[piece_type_][new_rotation][piecePart].y;
 
-		// If the piece would go off screen, don't.
+		// If the piece would go off screen, try moving right, left
+		// and rotating first. (This is a basic wall kick.)
 		if (boardX >= TETRIS_WIDTH || boardX < 0 || boardY >= TETRIS_HEIGHT) {
+			
+			if (horizontalMove(RIGHT)) {
+				rotatePiece(rotation);
+			}
+			if (horizontalMove(LEFT)) {
+				rotatePiece(rotation);
+			}
 			return;
 		}
 	}
@@ -386,8 +394,9 @@ void ofApp::hardDrop() {
 
 /*
 	Helper function for moving the piece left or right. 
+	Returns true if move was successful, otherwise false.
 */
-void ofApp::horizontalMove(Direction direction) {	
+bool ofApp::horizontalMove(Direction direction) {	
 
 	if (direction == RIGHT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -396,7 +405,7 @@ void ofApp::horizontalMove(Direction direction) {
 
 			// If the piece moving right would go off screen or hit a piece, don't.
 			if (boardX + 1 >= TETRIS_WIDTH || !isColorDefault(board_[boardX + 1][boardY])) {
-				return;
+				return false;
 			}
 		}
 		piece_origin_.x++;
@@ -408,13 +417,14 @@ void ofApp::horizontalMove(Direction direction) {
 			int boardY = piece_origin_.y + pointRotations_[piece_type_][piece_rotation_][piecePart].y;
 
 			if (boardX - 1 < 0 || !isColorDefault(board_[boardX - 1][boardY])) {
-				return;
+				return false;
 			}
 		}
 		piece_origin_.x--;
 		move_effect_.play();
 	}
 
+	return true;
 }
 
 /*

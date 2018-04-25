@@ -165,7 +165,7 @@ class ofApp : public ofBaseApp, public ofThread {
 		void rotatePiece(Direction rotation);
 		void softDrop();
 		void hardDrop();
-		void horizontalMove(Direction direction);
+		bool horizontalMove(Direction direction);
 		void clearRows();
 		bool rowIsEmpty(int row);
 		bool updateLowestPoint();
