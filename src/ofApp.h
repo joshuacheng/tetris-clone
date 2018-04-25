@@ -130,10 +130,14 @@ class ofApp : public ofBaseApp, public ofThread {
 
 	GameState game_state_;
 	ofTimer timer_;
+
 	ofTrueTypeFont tetris_font_;
 	ofTrueTypeFont score_font_;
-	ofSoundPlayer music_player_;
-	
+
+	ofSoundPlayer game_music_;
+	ofSoundPlayer move_effect_;
+	ofSoundPlayer rotate_effect_;
+
 	public:
 		void setup();
 		void update();
@@ -170,6 +174,10 @@ class ofApp : public ofBaseApp, public ofThread {
 
 		// ---- Colors ----
 		bool isColorDefault(const ofColor &color);
+
+		// ---- Helper methods ----
+		void playEndMusic();
+
 
 		// ---- Thread for auto piece drop ----
 

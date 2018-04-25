@@ -9,8 +9,9 @@
 	2.5 Toggle ghost pieces
 	3. Wall kicks
 	4. Game sound [NEXT]
-	5. do a bunch of refactoring
-	6. better UI
+	5. Make background black i guess
+	6. do a bunch of refactoring
+	7. better UI
 
 */
 
@@ -21,9 +22,18 @@ void ofApp::setup() {
 
 	tetris_font_.load("goodtime.ttf", 60);
 	score_font_.load("tetris_block.ttf", 30);
-	music_player_.load("tetris_music.mp3");
-	music_player_.setLoop(true);
-	music_player_.play();
+
+	// Tetris music
+	game_music_.load("tetris_music.mp3");
+	game_music_.setLoop(true);
+	game_music_.setVolume(0.1);
+	game_music_.play();
+
+	// Load effects
+	move_effect_.load("move_sound.mp3");
+	move_effect_.setMultiPlay(true);
+	rotate_effect_.load("rotate_sound.mp3");
+	rotate_effect_.setMultiPlay(true);
 
 	makeNewPiece();
 	game_state_ = IN_PROGRESS;
@@ -291,8 +301,9 @@ void ofApp::makeNewPiece() {
 	bool canMove = updateLowestPoint();
 
 	if (!canMove) {
-		std::cout << "LOSE" << std::endl;
 		game_state_ = GAME_OVER;
+		game_music_.stop();
+		playEndMusic();
 	}
 }
 
@@ -320,6 +331,7 @@ void ofApp::rotatePiece(Direction rotation) {
 		}
 	}
 	piece_rotation_ = new_rotation;
+	rotate_effect_.play();
 }
 
 /* 
@@ -388,6 +400,7 @@ void ofApp::horizontalMove(Direction direction) {
 			}
 		}
 		piece_origin_.x++;
+		move_effect_.play();
 	}
 	else if (direction == LEFT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -399,6 +412,7 @@ void ofApp::horizontalMove(Direction direction) {
 			}
 		}
 		piece_origin_.x--;
+		move_effect_.play();
 	}
 
 }
@@ -532,4 +546,12 @@ void ofApp::reset() {
 bool ofApp::isColorDefault(const ofColor &color) {
 	return (color.r == 255 && color.g == 255
 		&& color.b == 255 && color.a == 255);
+}
+
+// --------------- Helper methods --------
+
+void ofApp::playEndMusic() {
+	ofSoundPlayer end_music;
+	end_music.load("tetris_gameover.mp3");
+	end_music.play();
 }
