@@ -31,3 +31,4 @@ Week 2:
 - 4/24: Ghost pieces have been added and color have been added. Ghost pieces are based on similar logic
         to the hard drop method, which makes sense because both methods need to know where the piece *would*
 		fall. Lots of tweaks were needed to color to make sure I don't blind myself playing this game.
+  - Update: Game sounds have been added!
