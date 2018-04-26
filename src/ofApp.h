@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "Piece.h"
+//#include "Piece.h"
 #include "ofxDatGui.h"
 
 
@@ -12,6 +12,9 @@ const int TETRIS_HEIGHT = 21;
 // Where to draw the tetris board.
 const int TETRIS_START_X = 100;
 const int TETRIS_START_Y = 50;
+
+const int NEXT_BOX_X = 700;
+const int NEXT_BOX_Y = 150;
 
 const int ROW_MULTIPLIER = 100;
 
@@ -34,6 +37,21 @@ class ofApp : public ofBaseApp, public ofThread {
 	*/
 	enum PieceType {
 		I, J, L, O, S, T, Z
+	};
+
+	/*
+		Simple structure that describes point
+		with (x, y)
+	*/
+	struct Point {
+		int x, y;
+		Point() {
+			x = y = 0;
+		};
+		Point(int x, int y) {
+			this->x = x;
+			this->y = y;
+		}
 	};
 
 	// TODO: probably change to color array
@@ -124,6 +142,7 @@ class ofApp : public ofBaseApp, public ofThread {
 	*/
 	Point lowest_point_;
 	int piece_type_;
+	int next_piece_;
 	int piece_rotation_;
 	int player_score_;
 	bool show_ghosts_;
@@ -159,6 +178,8 @@ class ofApp : public ofBaseApp, public ofThread {
 		void drawPiece();
 		void drawGhostPiece();
 		void drawBoard();
+		void drawScore();
+		void drawNextPiece();
 
 		// ---- Piece manipulation ----
 		void makeNewPiece();

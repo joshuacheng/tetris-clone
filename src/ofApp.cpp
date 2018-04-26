@@ -6,10 +6,11 @@
 	1. Colors [DONE]
 	1.5. FIX SCORE LABEL MAYBE JUST USE TRUETYPEFONT [DONE]
 	2. Ghost pieces [DONE]
-	2.5 Toggle ghost pieces
+	2.5 Toggle ghost pieces [LATER]
 	3. Wall kicks [DONE]
 	4. Game sound [DONE]
-	4.5 ADD PIECE HOLDS
+	4.25 ADD NEXT PIECE [NEXT]
+	4.5 ADD PIECE HOLDS [NEXT]
 	5. Make background black i guess
 	6. do a bunch of refactoring
 	7. better UI
@@ -22,6 +23,7 @@ void ofApp::setup() {
 	show_ghosts_ = true;
 
 	tetris_font_.load("goodtime.ttf", 60);
+
 	score_font_.load("tetris_block.ttf", 30);
 
 	// Tetris music
@@ -30,12 +32,13 @@ void ofApp::setup() {
 	game_music_.setVolume(0.1);
 	game_music_.play();
 
-	// Load effects
+	// Load sound effects
 	move_effect_.load("move_sound.mp3");
 	move_effect_.setMultiPlay(true);
 	rotate_effect_.load("rotate_sound.mp3");
 	rotate_effect_.setMultiPlay(true);
 
+	next_piece_ = rand() % 7;
 	makeNewPiece();
 	game_state_ = IN_PROGRESS;
 
@@ -81,11 +84,9 @@ void ofApp::draw(){
 	drawBoard();
 	drawPiece();
 
-	ofColor score_color = colors[piece_type_];
-	score_color.setBrightness(192);
-	ofSetColor(score_color);
-	score_font_.drawString("SCORE " + std::to_string(player_score_), 1000, 1000);
-	
+	drawNextPiece();
+	drawScore();
+
 	if (game_state_ == PAUSED) {
 		ofSetColor(ofColor::black);
 		tetris_font_.drawString("PAUSED", TETRIS_START_X + 50, TETRIS_START_Y + 500);
@@ -192,6 +193,8 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
 
+// -------------------- Draw methods ----------------------
+
 /*
     The int piece defines which Tetris piece is drawn from the pointRotations array.
 	Ex: 0 refers to the I-piece.
@@ -285,14 +288,47 @@ void ofApp::drawBoard() {
 	}
 }
 
+void ofApp::drawScore() {
+	ofColor score_color = colors[piece_type_];
+	score_color.setBrightness(192);
+	ofSetColor(score_color);
+	score_font_.drawString("SCORE " + std::to_string(player_score_), 700, 1000);
+}
+
+void ofApp::drawNextPiece() {
+	score_font_.drawString("NEXT", 700, 100);
+	ofSetColor(ofColor::black);
+	ofNoFill();
+	ofDrawRectangle(NEXT_BOX_X, NEXT_BOX_Y, 300, 300);
+
+	Point start(NEXT_BOX_X + 50, NEXT_BOX_Y + 50);
+
+	for (int part = 0; part < 4; part++) {
+		int xDraw = start.x + pointRotations_[next_piece_][0][part].x * BOX_SIZE;
+		int yDraw = start.y + pointRotations_[next_piece_][0][part].y * BOX_SIZE;
+
+		// Draw in the piece.
+		ofSetColor(colors[next_piece_]);
+		ofFill();
+		ofDrawRectangle(xDraw + 1, yDraw + 1, BOX_SIZE - 1, BOX_SIZE - 1);
+
+		// Draw the piece border.
+		ofSetColor(ofColor::black);
+		ofNoFill();
+		ofDrawRectangle(xDraw + 2, yDraw + 2, BOX_SIZE - 2, BOX_SIZE - 2);
+
+	}
+}
+
+// ------------- Piece manipulation --------------
 void ofApp::makeNewPiece() {
 	piece_origin_.x = 4;
 	piece_origin_.y = 0;
 	lowest_point_.x = 0;
 	lowest_point_.y = 0;
 
-	int random_piece = rand() % 7;
-	piece_type_ = random_piece;
+	piece_type_ = next_piece_;
+	next_piece_ = rand() % 7;
 	piece_rotation_ = 0;
 
 	draw();
@@ -302,6 +338,7 @@ void ofApp::makeNewPiece() {
 
 	if (!canMove) {
 		game_state_ = GAME_OVER;
+		stopThread();
 		game_music_.stop();
 		game_music_.load("tetris_gameover.mp3");
 		game_music_.setLoop(false);
@@ -330,7 +367,8 @@ void ofApp::rotatePiece(Direction rotation) {
 
 		// If the piece would go off screen, try moving right, left
 		// and rotating first. (This is a basic wall kick.)
-		if (boardX >= TETRIS_WIDTH || boardX < 0 || boardY >= TETRIS_HEIGHT) {
+		if (boardX >= TETRIS_WIDTH || boardX < 0 || boardY >= TETRIS_HEIGHT 
+			|| !isColorDefault(board_[boardX][boardY])) {
 			
 			if (horizontalMove(RIGHT)) {
 				rotatePiece(rotation);
@@ -400,6 +438,7 @@ void ofApp::hardDrop() {
 	Returns true if move was successful, otherwise false.
 */
 bool ofApp::horizontalMove(Direction direction) {	
+	move_effect_.play();
 
 	if (direction == RIGHT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -412,7 +451,7 @@ bool ofApp::horizontalMove(Direction direction) {
 			}
 		}
 		piece_origin_.x++;
-		move_effect_.play();
+		//move_effect_.play();
 	}
 	else if (direction == LEFT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -424,7 +463,7 @@ bool ofApp::horizontalMove(Direction direction) {
 			}
 		}
 		piece_origin_.x--;
-		move_effect_.play();
+		//move_effect_.play();
 	}
 
 	return true;

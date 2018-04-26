@@ -1,16 +1,6 @@
 #pragma once
 #include <vector>
 
-struct Point {
-	int x, y;
-	Point() {
-		x = y = 0;
-	};
-	Point(int x, int y) {
-		this->x = x;
-		this->y = y;
-	}
-};
 
 enum PIECE_TYPE {
 	I,
