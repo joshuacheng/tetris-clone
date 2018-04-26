@@ -32,3 +32,6 @@ Week 2:
         to the hard drop method, which makes sense because both methods need to know where the piece *would*
 		fall. Lots of tweaks were needed to color to make sure I don't blind myself playing this game.
   - Update: Game sounds have been added!
+- 4/25: The "next piece" indicator has been added, which was easy to implement because the technology
+        to draw pieces already exists. The sound lag issues have been fixed. The mp3 file I was using 
+		simply had a 0.2 second delay and I needed to cut it more.
