@@ -15,6 +15,8 @@ const int TETRIS_START_Y = 50;
 
 const int NEXT_BOX_X = 700;
 const int NEXT_BOX_Y = 150;
+const int HOLD_BOX_X = 700;
+const int HOLD_BOX_Y = 700;
 
 const int ROW_MULTIPLIER = 100;
 
@@ -142,8 +144,12 @@ class ofApp : public ofBaseApp, public ofThread {
 	*/
 	Point lowest_point_;
 	int piece_type_;
-	int next_piece_;
 	int piece_rotation_;
+
+	int next_piece_;
+	int hold_piece_;
+	bool already_swapped;
+
 	int player_score_;
 	bool show_ghosts_;
 
@@ -156,6 +162,7 @@ class ofApp : public ofBaseApp, public ofThread {
 	ofSoundPlayer game_music_;
 	ofSoundPlayer move_effect_;
 	ofSoundPlayer rotate_effect_;
+	ofSoundPlayer line_clear_;
 
 	public:
 		void setup();
@@ -180,9 +187,12 @@ class ofApp : public ofBaseApp, public ofThread {
 		void drawBoard();
 		void drawScore();
 		void drawNextPiece();
+		void drawHoldPiece();
+		void drawGameOver();
 
 		// ---- Piece manipulation ----
 		void makeNewPiece();
+		void swapHoldPiece();
 		void rotatePiece(Direction rotation);
 		void softDrop();
 		void hardDrop();

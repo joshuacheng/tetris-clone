@@ -9,7 +9,7 @@
 	2.5 Toggle ghost pieces [LATER]
 	3. Wall kicks [DONE]
 	4. Game sound [DONE]
-	4.25 ADD NEXT PIECE [NEXT]
+	4.25 ADD NEXT PIECE [DONE]
 	4.5 ADD PIECE HOLDS [NEXT]
 	5. Make background black i guess
 	6. do a bunch of refactoring
@@ -23,7 +23,6 @@ void ofApp::setup() {
 	show_ghosts_ = true;
 
 	tetris_font_.load("goodtime.ttf", 60);
-
 	score_font_.load("tetris_block.ttf", 30);
 
 	// Tetris music
@@ -37,8 +36,11 @@ void ofApp::setup() {
 	move_effect_.setMultiPlay(true);
 	rotate_effect_.load("rotate_sound.mp3");
 	rotate_effect_.setMultiPlay(true);
+	line_clear_.load("line_clear.mp3");
 
 	next_piece_ = rand() % 7;
+	hold_piece_ = -1;
+
 	makeNewPiece();
 	game_state_ = IN_PROGRESS;
 
@@ -85,6 +87,7 @@ void ofApp::draw(){
 	drawPiece();
 
 	drawNextPiece();
+	drawHoldPiece();
 	drawScore();
 
 	if (game_state_ == PAUSED) {
@@ -92,11 +95,7 @@ void ofApp::draw(){
 		tetris_font_.drawString("PAUSED", TETRIS_START_X + 50, TETRIS_START_Y + 500);
 	}
 	else if (game_state_ == GAME_OVER) {
-		ofSetColor(ofColor::black);
-		tetris_font_.load("goodtime.ttf", 60);
-		tetris_font_.drawString("GAME OVER", TETRIS_START_X - 50, TETRIS_START_Y + 500);
-		tetris_font_.load("goodtime.ttf", 30);
-		tetris_font_.drawString("Press R to restart game", TETRIS_START_X - 50, TETRIS_START_Y + 600);
+		drawGameOver();
 	}
 }
 
@@ -104,7 +103,7 @@ void ofApp::draw(){
 // TODO: don't let player hold down to keep rotating piece
 // reference solution: https://forum.openframeworks.cc/t/multiple-keys-and-key-related-questions/2034/2
 
-void ofApp::keyPressed(int key){
+void ofApp::keyPressed(int key) {
 	int key_upper = toupper(key);
 
 	if (game_state_ == GAME_OVER && key_upper == 'R') {
@@ -139,6 +138,9 @@ void ofApp::keyPressed(int key){
 	}
 	else if (key_upper == ' '  && game_state_ == IN_PROGRESS) { // ' ' is space bar
 		hardDrop();
+	}
+	else if (key_upper == 'C' && game_state_ == IN_PROGRESS) {
+		swapHoldPiece();
 	}
 
 }
@@ -196,7 +198,8 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 // -------------------- Draw methods ----------------------
 
 /*
-    The int piece defines which Tetris piece is drawn from the pointRotations array.
+    The int piece defines which Tetris piece is drawn from 
+	the pointRotations array.
 	Ex: 0 refers to the I-piece.
 
 */
@@ -292,7 +295,7 @@ void ofApp::drawScore() {
 	ofColor score_color = colors[piece_type_];
 	score_color.setBrightness(192);
 	ofSetColor(score_color);
-	score_font_.drawString("SCORE " + std::to_string(player_score_), 700, 1000);
+	score_font_.drawString("SCORE " + std::to_string(player_score_), 700, 1100);
 }
 
 void ofApp::drawNextPiece() {
@@ -320,6 +323,41 @@ void ofApp::drawNextPiece() {
 	}
 }
 
+void ofApp::drawHoldPiece() {
+	score_font_.drawString("HOLD", 700, 600);
+	ofSetColor(ofColor::black);
+	ofNoFill();
+	ofDrawRectangle(HOLD_BOX_X, HOLD_BOX_Y, 300, 300);
+
+	Point start(HOLD_BOX_X + 50, HOLD_BOX_Y + 50);
+	
+	if (hold_piece_ >= 0 && hold_piece_ < 7) {
+		for (int part = 0; part < 4; part++) {
+			int xDraw = start.x + pointRotations_[hold_piece_][0][part].x * BOX_SIZE;
+			int yDraw = start.y + pointRotations_[hold_piece_][0][part].y * BOX_SIZE;
+
+			// Draw in the piece.
+			ofSetColor(colors[hold_piece_]);
+			ofFill();
+			ofDrawRectangle(xDraw + 1, yDraw + 1, BOX_SIZE - 1, BOX_SIZE - 1);
+
+			// Draw the piece border.
+			ofSetColor(ofColor::black);
+			ofNoFill();
+			ofDrawRectangle(xDraw + 2, yDraw + 2, BOX_SIZE - 2, BOX_SIZE - 2);
+
+		}
+	}
+}
+
+void ofApp::drawGameOver() {
+	ofSetColor(ofColor::black);
+	tetris_font_.load("goodtime.ttf", 60);
+	tetris_font_.drawString("GAME OVER", TETRIS_START_X - 50, TETRIS_START_Y + 500);
+	tetris_font_.load("goodtime.ttf", 30);
+	tetris_font_.drawString("Press R to restart game", TETRIS_START_X - 50, TETRIS_START_Y + 600);
+}
+
 // ------------- Piece manipulation --------------
 void ofApp::makeNewPiece() {
 	piece_origin_.x = 4;
@@ -329,6 +367,7 @@ void ofApp::makeNewPiece() {
 
 	piece_type_ = next_piece_;
 	next_piece_ = rand() % 7;
+	already_swapped = false;
 	piece_rotation_ = 0;
 
 	draw();
@@ -346,11 +385,29 @@ void ofApp::makeNewPiece() {
 	}
 }
 
+void ofApp::swapHoldPiece() {
+
+	/* 
+		-1 represents nothing in hold, special case
+		because nothing gets swapped out
+	*/
+	if (hold_piece_ == -1) {
+		hold_piece_ = piece_type_;
+		makeNewPiece();
+	}
+	else if (hold_piece_ >= 0 && hold_piece_ < 7 && !already_swapped) {
+		// Swap hold and current piece
+		int temp_piece = hold_piece_;
+		hold_piece_ = piece_type_;
+		piece_type_ = temp_piece;
+		already_swapped = true;
+	}
+}
+
 /*
 	Rotates a piece based on the rotation enum.
 	Wall kicks if piece is up against a wall.
 */
-
 void ofApp::rotatePiece(Direction rotation) {
 	int new_rotation;
 
@@ -438,7 +495,6 @@ void ofApp::hardDrop() {
 	Returns true if move was successful, otherwise false.
 */
 bool ofApp::horizontalMove(Direction direction) {	
-	move_effect_.play();
 
 	if (direction == RIGHT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -451,7 +507,7 @@ bool ofApp::horizontalMove(Direction direction) {
 			}
 		}
 		piece_origin_.x++;
-		//move_effect_.play();
+		move_effect_.play();
 	}
 	else if (direction == LEFT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -463,7 +519,7 @@ bool ofApp::horizontalMove(Direction direction) {
 			}
 		}
 		piece_origin_.x--;
-		//move_effect_.play();
+		move_effect_.play();
 	}
 
 	return true;
@@ -504,7 +560,10 @@ void ofApp::clearRows() {
 	}
 
 	player_score_ += ROW_MULTIPLIER * rowsCleared;
-	 
+	if (rowsCleared > 0) {
+		line_clear_.play();
+	}
+
 	// Push above rows down to appropriate spot.
 	for (int rowToCheck = lowest_point_.y; rowToCheck > 0; rowToCheck--) {
 		if (!rowIsEmpty(rowToCheck)) {
