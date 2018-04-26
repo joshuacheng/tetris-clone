@@ -9,6 +9,7 @@
 	2.5 Toggle ghost pieces
 	3. Wall kicks [DONE]
 	4. Game sound [DONE]
+	4.5 ADD PIECE HOLDS
 	5. Make background black i guess
 	6. do a bunch of refactoring
 	7. better UI
@@ -302,7 +303,9 @@ void ofApp::makeNewPiece() {
 	if (!canMove) {
 		game_state_ = GAME_OVER;
 		game_music_.stop();
-		playEndMusic();
+		game_music_.load("tetris_gameover.mp3");
+		game_music_.setLoop(false);
+		game_music_.play();
 	}
 }
 
@@ -547,8 +550,7 @@ void ofApp::reset() {
 		}
 	}
 
-	game_state_ = IN_PROGRESS;
-	makeNewPiece();
+	setup();
 }
 
 // --------------- Colors ----------------
@@ -556,12 +558,4 @@ void ofApp::reset() {
 bool ofApp::isColorDefault(const ofColor &color) {
 	return (color.r == 255 && color.g == 255
 		&& color.b == 255 && color.a == 255);
-}
-
-// --------------- Helper methods --------
-
-void ofApp::playEndMusic() {
-	ofSoundPlayer end_music;
-	end_music.load("tetris_gameover.mp3");
-	end_music.play();
 }

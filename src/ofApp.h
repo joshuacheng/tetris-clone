@@ -175,9 +175,6 @@ class ofApp : public ofBaseApp, public ofThread {
 		// ---- Colors ----
 		bool isColorDefault(const ofColor &color);
 
-		// ---- Helper methods ----
-		void playEndMusic();
-
 
 		// ---- Thread for auto piece drop ----
 
