@@ -4,6 +4,7 @@
 //#include "Piece.h"
 #include "ofxDatGui.h"
 
+const uint64_t PIECE_DELAY = 700000000;
 
 const int BOX_SIZE = 50;
 const int TETRIS_WIDTH = 10;
@@ -164,6 +165,8 @@ class ofApp : public ofBaseApp, public ofThread {
 	ofSoundPlayer rotate_effect_;
 	ofSoundPlayer line_clear_;
 
+	ofxDatGui *gui_;
+
 	public:
 		void setup();
 		void update();
@@ -203,9 +206,16 @@ class ofApp : public ofBaseApp, public ofThread {
 		void setPiecesToBoard();
 		void reset();
 
+		// ---- GUI methods ----
+		void onToggleEvent(ofxDatGuiToggleEvent e);
+		void onSliderEvent(ofxDatGuiSliderEvent e);
+
 		// ---- Colors ----
 		bool isColorDefault(const ofColor &color);
 
+		// ---- Setup ----
+		void setUpMusic();
+		void setUpSoundEffects();
 
 		// ---- Thread for auto piece drop ----
 

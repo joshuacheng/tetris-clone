@@ -26,17 +26,16 @@ void ofApp::setup() {
 	score_font_.load("tetris_block.ttf", 30);
 
 	// Tetris music
-	game_music_.load("tetris_music.mp3");
-	game_music_.setLoop(true);
-	game_music_.setVolume(0.1);
-	game_music_.play();
+	setUpMusic();
+	setUpSoundEffects();
 
-	// Load sound effects
-	move_effect_.load("move_sound.mp3");
-	move_effect_.setMultiPlay(true);
-	rotate_effect_.load("rotate_sound.mp3");
-	rotate_effect_.setMultiPlay(true);
-	line_clear_.load("line_clear.mp3");
+	// Set up GUI
+	gui_ = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
+	gui_->addToggle("Show ghost pieces", true);
+	gui_->onToggleEvent(this, &ofApp::onToggleEvent);
+	gui_->addSlider("Volume", 0, 100, 10);
+	gui_->getSlider("Volume")->setPrecision(0);
+	gui_->onSliderEvent(this, &ofApp::onSliderEvent);
 
 	next_piece_ = rand() % 7;
 	hold_piece_ = -1;
@@ -44,7 +43,7 @@ void ofApp::setup() {
 	makeNewPiece();
 	game_state_ = IN_PROGRESS;
 
-	timer_.setPeriodicEvent(700000000);
+	timer_.setPeriodicEvent(PIECE_DELAY);
 	startThread();
 }
 
@@ -651,9 +650,41 @@ void ofApp::reset() {
 	setup();
 }
 
+// -------------- GUI -------------------
+void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
+	show_ghosts_ = !show_ghosts_;
+}
+
+void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
+	double raw_volume = e.target->getValue();
+
+	// Map raw_volume to value between 0 and 1 for ofSoundPlayer
+	float mapped_volume = ofMap(raw_volume, 0, 100, 0, 1);
+	game_music_.setVolume(mapped_volume);
+}
+
 // --------------- Colors ----------------
 
 bool ofApp::isColorDefault(const ofColor &color) {
 	return (color.r == 255 && color.g == 255
 		&& color.b == 255 && color.a == 255);
+}
+
+
+// --------------- Setup -----------------
+
+void ofApp::setUpMusic() {
+	game_music_.load("tetris_music.mp3");
+	game_music_.setLoop(true);
+	game_music_.setVolume(0.1);
+	game_music_.play();
+}
+
+void ofApp::setUpSoundEffects() {
+	move_effect_.load("move_sound.mp3");
+	move_effect_.setMultiPlay(true);
+	rotate_effect_.load("rotate_sound.mp3");
+	rotate_effect_.setMultiPlay(true);
+	line_clear_.load("line_clear.mp3");
+	line_clear_.setMultiPlay(true);
 }
