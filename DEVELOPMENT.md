@@ -35,3 +35,6 @@ Week 2:
 - 4/25: The "next piece" indicator has been added, which was easy to implement because the technology
         to draw pieces already exists. The sound lag issues have been fixed. The mp3 file I was using 
 		simply had a 0.2 second delay and I needed to cut it more.
+- 4/29: Mostly all that's left in this game is extra features, like the ghost button toggle and volume
+        slider I added today. The big things left that I want to do are making the game look aesthetically
+		pleasing and refactoring some code.
