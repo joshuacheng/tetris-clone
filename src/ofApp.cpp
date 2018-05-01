@@ -21,9 +21,11 @@
 void ofApp::setup() {
 	player_score_ = 0;
 	show_ghosts_ = true;
+	play_sound_effects_ = true;
 
 	tetris_font_.load("goodtime.ttf", 60);
 	score_font_.load("tetris_block.ttf", 30);
+	controls_font_.load("Verdana.ttf", 30);
 
 	setUpMusic();
 	setUpSoundEffects();
@@ -73,6 +75,16 @@ void ofApp::threadedFunction() {
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+	if (game_state_ == PAUSED) {
+		ofSetColor(ofColor::black);
+		tetris_font_.drawString("PAUSED", TETRIS_START_X + 50, TETRIS_START_Y + 500);
+	}
+	else if (game_state_ == GAME_OVER) {
+		drawGameOver();
+		return;
+	}
+
+	drawControls();
 
 	drawBoard();
 	drawPiece();
@@ -80,14 +92,6 @@ void ofApp::draw(){
 	drawNextPiece();
 	drawHoldPiece();
 	drawScore();
-
-	if (game_state_ == PAUSED) {
-		ofSetColor(ofColor::black);
-		tetris_font_.drawString("PAUSED", TETRIS_START_X + 50, TETRIS_START_Y + 500);
-	}
-	else if (game_state_ == GAME_OVER) {
-		drawGameOver();
-	}
 }
 
 void ofApp::keyPressed(int key) {
@@ -297,6 +301,15 @@ void ofApp::drawGameOver() {
 	tetris_font_.drawString("Press R to restart game", TETRIS_START_X - 50, TETRIS_START_Y + 600);
 }
 
+void ofApp::drawControls() {
+	ofSetColor(ofColor::black);
+	controls_font_.drawString("Controls", 1400, 300);
+	ofDrawRectangle(1250, 320, 650, 500);
+	controls_font_.drawString("Left/Right: Move piece", 1300, 400);
+	controls_font_.drawString("Z/X: Rotate piece left/right", 1300, 500);
+	controls_font_.drawString("C: Hold piece", 1300, 600);
+	controls_font_.drawString("P: Pause", 1300, 700);
+}
 // ------------- Piece manipulation --------------
 
 void ofApp::makeNewPiece() {
@@ -377,7 +390,9 @@ void ofApp::rotatePiece(Direction rotation) {
 		}
 	}
 	piece_rotation_ = new_rotation;
-	rotate_effect_.play();
+	if (play_sound_effects_) {
+		rotate_effect_.play();
+	}
 }
 
 /* 
@@ -447,7 +462,6 @@ bool ofApp::horizontalMove(Direction direction) {
 			}
 		}
 		piece_origin_.x++;
-		move_effect_.play();
 	}
 	else if (direction == LEFT) {
 		for (int piecePart = 0; piecePart < 4; piecePart++) {
@@ -459,6 +473,9 @@ bool ofApp::horizontalMove(Direction direction) {
 			}
 		}
 		piece_origin_.x--;
+	}
+
+	if (play_sound_effects_) {
 		move_effect_.play();
 	}
 
@@ -500,7 +517,7 @@ void ofApp::clearRows() {
 	}
 
 	player_score_ += ROW_MULTIPLIER * rowsCleared;
-	if (rowsCleared > 0) {
+	if (rowsCleared > 0 && play_sound_effects_) {
 		line_clear_.play();
 	}
 
@@ -593,7 +610,12 @@ void ofApp::reset() {
 
 // -------------- GUI -------------------
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e) {
-	show_ghosts_ = !show_ghosts_;
+	if (e.target->getLabel() == "Show ghost pieces") {
+		show_ghosts_ = !show_ghosts_;
+	}
+	else if (e.target->getLabel() == "Play sound effects") {
+		play_sound_effects_ = !play_sound_effects_;
+	}
 }
 
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
@@ -634,6 +656,8 @@ void ofApp::setUpGui() {
 	gui_ = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
 	gui_->addToggle("Show ghost pieces", true);
 	gui_->getToggle("Show ghost pieces")->setWidth(700);
+	gui_->addToggle("Play sound effects", true);
+	gui_->getToggle("Play sound effects")->setWidth(700);
 	gui_->onToggleEvent(this, &ofApp::onToggleEvent);
 	gui_->addSlider("Volume", 0, 100, 10);
 	gui_->getSlider("Volume")->setWidth(700, 200);

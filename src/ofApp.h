@@ -148,12 +148,14 @@ class ofApp : public ofBaseApp, public ofThread {
 
 	int player_score_;
 	bool show_ghosts_;
+	bool play_sound_effects_;
 
 	GameState game_state_;
 	ofTimer timer_;
 
 	ofTrueTypeFont tetris_font_;
 	ofTrueTypeFont score_font_;
+	ofTrueTypeFont controls_font_;
 
 	ofSoundPlayer game_music_;
 	ofSoundPlayer move_effect_;
@@ -177,6 +179,7 @@ class ofApp : public ofBaseApp, public ofThread {
 		void drawNextPiece();
 		void drawHoldPiece();
 		void drawGameOver();
+		void drawControls();
 
 		// ---- Piece manipulation ----
 		void makeNewPiece();
