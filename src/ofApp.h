@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-//#include "Piece.h"
 #include "ofxDatGui.h"
 
 const uint64_t PIECE_DELAY = 700000000;
@@ -57,7 +56,6 @@ class ofApp : public ofBaseApp, public ofThread {
 		}
 	};
 
-	// TODO: probably change to color array
 	ofColor board_[TETRIS_WIDTH][TETRIS_HEIGHT];
 
 	/* 
@@ -67,9 +65,6 @@ class ofApp : public ofBaseApp, public ofThread {
 		See https://vignette.wikia.nocookie.net/tetrisconcept/images/3/3d/SRS-pieces.png/revision/latest?cb=20060626173148
 		for visualization.
 
-		TODO: Maybe refactor into separate classes later 
-		      which use std::array to get list of points
-		
 	*/
 	Point pointRotations_[7][4][4] = {
 		// I

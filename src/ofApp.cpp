@@ -298,6 +298,7 @@ void ofApp::drawGameOver() {
 }
 
 // ------------- Piece manipulation --------------
+
 void ofApp::makeNewPiece() {
 	piece_origin_.x = 4;
 	piece_origin_.y = 0;
