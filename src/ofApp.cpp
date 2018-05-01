@@ -25,17 +25,9 @@ void ofApp::setup() {
 	tetris_font_.load("goodtime.ttf", 60);
 	score_font_.load("tetris_block.ttf", 30);
 
-	// Tetris music
 	setUpMusic();
 	setUpSoundEffects();
-
-	// Set up GUI
-	gui_ = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
-	gui_->addToggle("Show ghost pieces", true);
-	gui_->onToggleEvent(this, &ofApp::onToggleEvent);
-	gui_->addSlider("Volume", 0, 100, 10);
-	gui_->getSlider("Volume")->setPrecision(0);
-	gui_->onSliderEvent(this, &ofApp::onSliderEvent);
+	setUpGui();
 
 	next_piece_ = rand() % 7;
 	hold_piece_ = -1;
@@ -98,10 +90,6 @@ void ofApp::draw(){
 	}
 }
 
-//--------------------------------------------------------------
-// TODO: don't let player hold down to keep rotating piece
-// reference solution: https://forum.openframeworks.cc/t/multiple-keys-and-key-related-questions/2034/2
-
 void ofApp::keyPressed(int key) {
 	int key_upper = toupper(key);
 
@@ -141,56 +129,6 @@ void ofApp::keyPressed(int key) {
 	else if (key_upper == 'C' && game_state_ == IN_PROGRESS) {
 		swapHoldPiece();
 	}
-
-}
-
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
 
@@ -687,4 +625,14 @@ void ofApp::setUpSoundEffects() {
 	rotate_effect_.setMultiPlay(true);
 	line_clear_.load("line_clear.mp3");
 	line_clear_.setMultiPlay(true);
+}
+
+void ofApp::setUpGui() {
+	gui_ = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
+	gui_->addToggle("Show ghost pieces", true);
+	gui_->onToggleEvent(this, &ofApp::onToggleEvent);
+	gui_->addSlider("Volume", 0, 100, 10);
+	gui_->getSlider("Volume")->setPrecision(0);
+	gui_->onSliderEvent(this, &ofApp::onSliderEvent);
+
 }
