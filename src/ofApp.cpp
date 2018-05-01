@@ -101,9 +101,11 @@ void ofApp::keyPressed(int key) {
 	if (key_upper == 'P') {
 		if (game_state_ == IN_PROGRESS) {
 			game_state_ = PAUSED;
+			game_music_.setPaused(true);
 		}
 		else if (game_state_ == PAUSED) {
 			game_state_ = IN_PROGRESS;
+			game_music_.setPaused(false);
 		}
 		return;
 	}
@@ -630,8 +632,10 @@ void ofApp::setUpSoundEffects() {
 void ofApp::setUpGui() {
 	gui_ = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
 	gui_->addToggle("Show ghost pieces", true);
+	gui_->getToggle("Show ghost pieces")->setWidth(700);
 	gui_->onToggleEvent(this, &ofApp::onToggleEvent);
 	gui_->addSlider("Volume", 0, 100, 10);
+	gui_->getSlider("Volume")->setWidth(700, 200);
 	gui_->getSlider("Volume")->setPrecision(0);
 	gui_->onSliderEvent(this, &ofApp::onSliderEvent);
 
