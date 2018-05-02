@@ -304,11 +304,13 @@ void ofApp::drawGameOver() {
 void ofApp::drawControls() {
 	ofSetColor(ofColor::black);
 	controls_font_.drawString("Controls", 1400, 300);
-	ofDrawRectangle(1250, 320, 650, 500);
+	ofDrawRectangle(1250, 320, 650, 600);
 	controls_font_.drawString("Left/Right: Move piece", 1300, 400);
 	controls_font_.drawString("Z/X: Rotate piece left/right", 1300, 500);
 	controls_font_.drawString("C: Hold piece", 1300, 600);
 	controls_font_.drawString("P: Pause", 1300, 700);
+	controls_font_.drawString("Space: Hard drop", 1300, 800);
+	
 }
 // ------------- Piece manipulation --------------
 
