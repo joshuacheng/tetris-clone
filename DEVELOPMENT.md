@@ -38,3 +38,8 @@ Week 2:
 - 4/29: Mostly all that's left in this game is extra features, like the ghost button toggle and volume
         slider I added today. The big things left that I want to do are making the game look aesthetically
 		pleasing and refactoring some code.
+- 5/2:  There's a really strange exception being thrown when I soft drop pieces, but the exception is thrown
+        in OF and ofxDatGui code, none of which I understand nor want to modify. The program still exits with
+		exit code 0. When I look at the call hierarchy, it tells me that my drawString call from ofTrueTypeFont
+		is causing it, which makes little sense to me because the only thing it does is draw a string. Oh well.
+		Note to self: Maybe just build the program in Release Mode.
