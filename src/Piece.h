@@ -14,8 +14,8 @@ enum PIECE_TYPE {
 
 class Piece {
 
-	//Point pointRotations_[4][4];
-	std::vector<Point> pointRotations_;
+	// Point pointRotations_[4][4];
+	// std::vector<Point> pointRotations_;
 	
 public:
 

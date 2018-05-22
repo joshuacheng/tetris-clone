@@ -2,6 +2,6 @@
 
 Piece::Piece(PIECE_TYPE piece_type) {
 
-	// todo: maybe implement
+	// todo: refactor piece code here
 
 }
