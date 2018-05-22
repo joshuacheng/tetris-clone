@@ -85,7 +85,7 @@ void ofApp::draw(){
 	}
 
 	drawControls();
-
+	
 	drawBoard();
 	drawPiece();
 
